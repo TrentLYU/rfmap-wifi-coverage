@@ -1,0 +1,13 @@
+{
+  "path": "outputs/rfmap-studio/model_weights.js",
+  "file_kb": 5647.1,
+  "n_params": 1083625,
+  "weight_kb": 4232.9,
+  "n_tensors": 36,
+  "model": "unet",
+  "normalizer": {
+    "mean": -55.58557891845703,
+    "std": 9.672722816467285
+  }
+}
+js -> outputs/rfmap-studio/nn_model.js

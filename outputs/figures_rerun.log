@@ -1,0 +1,15 @@
+/Users/lvzhaonan/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/j5/m13_w41x46s5_tzbt59qrdw40000gn/T/matplotlib-gml90fpl because there was an issue with the default path (/Users/lvzhaonan/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Matplotlib is building the font cache; this may take a moment.
+{
+  "geometry": "outputs/figures/fig_geometry.png",
+  "data_profile": "outputs/figures/fig_data_profile.png",
+  "train_curves": "outputs/figures/fig_training_curves.png",
+  "sweep": "outputs/figures/fig_sweep.png",
+  "real_corner": "outputs/figures/fig_real_corner.png",
+  "err_corner": "outputs/figures/fig_err_corner.png",
+  "real_center": "outputs/figures/fig_real_center.png",
+  "err_center": "outputs/figures/fig_err_center.png",
+  "sim_samples": "outputs/figures/fig_sim_samples.png",
+  "sim_compare": "outputs/figures/fig_sim_compare.png"
+}

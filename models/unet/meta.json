@@ -1,0 +1,39 @@
+{
+  "model": "unet",
+  "label": "方案二 · 小型 U-Net",
+  "width": 24,
+  "params": 1083625,
+  "normalizer": {
+    "mean": -55.58557891845703,
+    "std": 9.672722816467285
+  },
+  "grid": {
+    "x0": 0.0,
+    "y0": 0.0,
+    "cell": 0.2,
+    "nx": 64,
+    "ny": 64,
+    "x_max": 12.8,
+    "y_max": 12.8,
+    "room_w": 12.643,
+    "room_h": 11.731
+  },
+  "has_prior": false,
+  "input_mode": "base",
+  "n_input_channels": 3,
+  "loss": "mse",
+  "train_files": [
+    "data/sim/train.npz"
+  ],
+  "val_file": "data/sim/val.npz",
+  "train_size": 1200,
+  "val_size": 200,
+  "epochs_run": 52,
+  "best_epoch": 16,
+  "best_val_loss": 0.22549861371517183,
+  "seed": 7,
+  "lr": 0.002,
+  "batch_size": 16,
+  "device": "mps",
+  "seconds": 92.1
+}

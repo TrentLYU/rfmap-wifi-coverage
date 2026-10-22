@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RF Map Studio - Wi-Fi RSSI 热力图工作台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    RF Map Studio
+    <span class="sub">纯前端 Wi-Fi RSSI 覆盖预测</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="k">房间面积</span><span class="v" id="infoArea">-</span></div>
+    <div class="stat"><span class="k">测点数</span><span class="v" id="infoPoints">0</span></div>
+    <div class="stat"><span class="k">推理耗时</span><span class="v" id="infoTime">-</span></div>
+    <div class="stat"><span class="k">色标范围</span><span class="v" id="infoRange">-100 ~ -40 dBm</span></div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <section class="canvas-wrap">
+    <canvas id="scene"></canvas>
+    <div id="tooltip" class="tooltip hidden"></div>
+  </section>
+
+  <aside class="panel">
+
+    <div class="block">
+      <h2>户型</h2>
+      <div class="row">
+        <label for="roomWNum">房间宽度 x</label>
+        <input type="number" id="roomWNum" min="2" max="15" step="0.001" value="12.643">
+        <span class="unit">m</span>
+      </div>
+      <input type="range" id="roomWRange" min="2" max="15" step="0.001" value="12.643">
+      <div class="row">
+        <label for="roomHNum">房间高度 y</label>
+        <input type="number" id="roomHNum" min="2" max="15" step="0.001" value="11.731">
+        <span class="unit">m</span>
+      </div>
+      <input type="range" id="roomHRange" min="2" max="15" step="0.001" value="11.731">
+      <div class="row">
+        <label for="doorWNum">门洞宽度</label>
+        <input type="number" id="doorWNum" min="0.6" max="6" step="0.001" value="2.330">
+        <span class="unit">m</span>
+      </div>
+      <button id="btnResetRoom" class="btn ghost">恢复默认户型</button>
+      <p class="hint">画布左上角的手柄可拖动调整房间宽高；也可直接输入或拖动滑杆。</p>
+    </div>
+
+    <div class="block">
+      <h2>障碍物（矩形）</h2>
+      <button id="btnAddObs" class="btn ghost">添加矩形障碍物</button>
+      <ul id="obsList" class="list"></ul>
+      <div id="obsEditor" class="editor hidden">
+        <div class="row">
+          <label for="obsX">x</label>
+          <input type="number" id="obsX" step="0.001" min="0">
+          <label for="obsY">y</label>
+          <input type="number" id="obsY" step="0.001" min="0">
+        </div>
+        <div class="row">
+          <label for="obsW">宽</label>
+          <input type="number" id="obsW" step="0.001" min="0.1">
+          <label for="obsH">高</label>
+          <input type="number" id="obsH" step="0.001" min="0.1">
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>测点</h2>
+      <div class="row">
+        <button id="btnLoadSample" class="btn primary">载入示例数据（49 点）</button>
+        <button id="btnClearPoints" class="btn ghost">清空测点</button>
+      </div>
+      <p class="hint">在画布房间内部单击添加测点，随即弹出输入框填写 RSSI（-100 ~ 0 dBm）。
+        拖动测点可移动，右键单击或列表内按钮可删除。</p>
+      <p class="hint strong">已添加测点：<span id="pointCount">0</span> 个</p>
+      <ul id="pointList" class="list"></ul>
+    </div>
+
+    <div class="block">
+      <h2>热力图</h2>
+      <div class="row">
+        <button id="btnInfer" class="btn primary">生成热力图</button>
+        <button id="btnClearHeat" class="btn ghost">清除热力图</button>
+      </div>
+      <div class="row">
+        <button id="btnExportPng" class="btn ghost">导出 PNG</button>
+        <button id="btnExportCsv" class="btn ghost">导出测点 CSV</button>
+      </div>
+      <p class="hint">推理接口：<code>window.RFM_Infer(inputObj)</code>。当前为占位实现（反距离加权插值 IDW，1/d²，6 m 回退全局均值），可被神经网络推理整体替换。</p>
+    </div>
+
+    <div class="block">
+      <h2>坐标约定</h2>
+      <p class="hint">
+        坐标系原点位于房间内部右下角；x 轴正向指向左，y 轴正向指向上。
+        底部门居中。<br>
+        画布绘制时 x 方向已反向，保证与现场方位一致。
+      </p>
+    </div>
+
+  </aside>
+</main>
+
+<div id="rssiModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>输入测点 RSSI</h3>
+    <p class="hint" id="rssiModalPos">-</p>
+    <div class="row">
+      <input type="number" id="rssiInput" min="-100" max="0" step="0.1" value="-45">
+      <span class="unit">dBm</span>
+    </div>
+    <p class="err hidden" id="rssiErr">请输入 -100 ~ 0 之间的数值。</p>
+    <div class="modal-actions">
+      <button id="rssiOk" class="btn primary">确定</button>
+      <button id="rssiCancel" class="btn ghost">取消</button>
+    </div>
+  </div>
+</div>
+
+<script id="sampleRoomData" type="application/json">
+{
+  "name": "ROOM-A 示例数据",
+  "note": "坐标为房间内部坐标系（原点在右下角，x 向左为正，y 向上为正），单位米。",
+  "room": {
+    "w": 12.643,
+    "h": 11.731,
+    "door": {
+      "w": 2.33,
+      "edge": "bottom",
+      "centered": true
+    },
+    "obstacles": [
+      {
+        "x": 11.813,
+        "y": 5.761,
+        "w": 0.83,
+        "h": 1.01,
+        "name": "结构柱"
+      }
+    ]
+  },
+  "grid": {
+    "x0": 0.0,
+    "y0": 0.0,
+    "cell": 0.2,
+    "nx": 64,
+    "ny": 64
+  },
+  "points": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "rssi": -44.0
+    },
+    {
+      "x": 0.0,
+      "y": 1.9552,
+      "rssi": -42.0
+    },
+    {
+      "x": 0.0,
+      "y": 3.9103,
+      "rssi": -39.0
+    },
+    {
+      "x": 0.0,
+      "y": 5.8655,
+      "rssi": -39.0
+    },
+    {
+      "x": 0.0,
+      "y": 7.8207,
+      "rssi": -41.0
+    },
+    {
+      "x": 0.0,
+      "y": 9.7758,
+      "rssi": -41.0
+    },
+    {
+      "x": 0.0,
+      "y": 11.731,
+      "rssi": -46.0
+    },
+    {
+      "x": 2.0,
+      "y": 0.0,
+      "rssi": -45.0
+    },
+    {
+      "x": 2.0,
+      "y": 1.9552,
+      "rssi": -39.0
+    },
+    {
+      "x": 2.0,
+      "y": 3.9103,
+      "rssi": -36.0
+    },
+    {
+      "x": 2.0,
+      "y": 5.8655,
+      "rssi": -30.0
+    },
+    {
+      "x": 2.0,
+      "y": 7.8207,
+      "rssi": -31.0
+    },
+    {
+      "x": 2.0,
+      "y": 9.7758,
+      "rssi": -37.0
+    },
+    {
+      "x": 2.0,
+      "y": 11.731,
+      "rssi": -41.0
+    },
+    {
+      "x": 4.0,
+      "y": 0.0,
+      "rssi": -48.0
+    },
+    {
+      "x": 4.0,
+      "y": 1.9552,
+      "rssi": -45.0
+    },
+    {
+      "x": 4.0,
+      "y": 3.9103,
+      "rssi": -44.0
+    },
+    {
+      "x": 4.0,
+      "y": 5.8655,
+      "rssi": -37.0
+    },
+    {
+      "x": 4.0,
+      "y": 7.8207,
+      "rssi": -40.0
+    },
+    {
+      "x": 4.0,
+      "y": 9.7758,
+      "rssi": -48.0
+    },
+    {
+      "x": 4.0,
+      "y": 11.731,
+      "rssi": -40.0
+    },
+    {
+      "x": 6.0,
+      "y": 0.0,
+      "rssi": -48.0
+    },
+    {
+      "x": 6.0,
+      "y": 1.9552,
+      "rssi": -46.0
+    },
+    {
+      "x": 6.0,
+      "y": 3.9103,
+      "rssi": -45.0
+    },
+    {
+      "x": 6.0,
+      "y": 5.8655,
+      "rssi": -43.0
+    },
+    {
+      "x": 6.0,
+      "y": 7.8207,
+      "rssi": -45.0
+    },
+    {
+      "x": 6.0,
+      "y": 9.7758,
+      "rssi": -42.0
+    },
+    {
+      "x": 6.0,
+      "y": 11.731,
+      "rssi": -40.0
+    },
+    {
+      "x": 8.0,
+      "y": 0.0,
+      "rssi": -46.0
+    },
+    {
+      "x": 8.0,
+      "y": 1.9552,
+      "rssi": -45.0
+    },
+    {
+      "x": 8.0,
+      "y": 3.9103,
+      "rssi": -46.0
+    },
+    {
+      "x": 8.0,
+      "y": 5.8655,
+      "rssi": -49.0
+    },
+    {
+      "x": 8.0,
+      "y": 7.8207,
+      "rssi": -41.0
+    },
+    {
+      "x": 8.0,
+      "y": 9.7758,
+      "rssi": -44.0
+    },
+    {
+      "x": 8.0,
+      "y": 11.731,
+      "rssi": -50.0
+    },
+    {
+      "x": 10.3,
+      "y": 0.0,
+      "rssi": -49.0
+    },
+    {
+      "x": 10.3,
+      "y": 1.9552,
+      "rssi": -44.0
+    },
+    {
+      "x": 10.3,
+      "y": 3.9103,
+      "rssi": -45.0
+    },
+    {
+      "x": 10.3,
+      "y": 5.8655,
+      "rssi": -41.0
+    },
+    {
+      "x": 10.3,
+      "y": 7.8207,
+      "rssi": -42.0
+    },
+    {
+      "x": 10.3,
+      "y": 9.7758,
+      "rssi": -41.0
+    },
+    {
+      "x": 10.3,
+      "y": 11.731,
+      "rssi": -44.0
+    },
+    {
+      "x": 11.7,
+      "y": 5.8655,
+      "rssi": -44.0
+    },
+    {
+      "x": 11.7,
+      "y": 8.7005,
+      "rssi": -47.0
+    },
+    {
+      "x": 12.0,
+      "y": 0.0,
+      "rssi": -46.0
+    },
+    {
+      "x": 12.0,
+      "y": 1.9552,
+      "rssi": -47.0
+    },
+    {
+      "x": 12.0,
+      "y": 3.9103,
+      "rssi": -51.0
+    },
+    {
+      "x": 12.0,
+      "y": 9.7758,
+      "rssi": -47.0
+    },
+    {
+      "x": 12.0,
+      "y": 11.731,
+      "rssi": -50.0
+    }
+  ]
+}
+</script>
+<script src="model_weights.js"></script>
+<script src="nn_model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

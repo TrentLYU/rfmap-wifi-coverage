@@ -1,0 +1,26 @@
+# ---- Python ----
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ---- 本机工具 / 会话临时目录 ----
+.deepworks/
+uploads/
+.opencode/
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# ---- 可重建的大缓存（先验图缓存，训练时自动生成） ----
+data/sim/.cache/
+data/sim_scatter/.cache/
+*.npy
+
+# ---- 早期中间产物（与 fig_*.png 内容重复） ----
+outputs/figures/geometry.png
+outputs/figures/data_profile.png

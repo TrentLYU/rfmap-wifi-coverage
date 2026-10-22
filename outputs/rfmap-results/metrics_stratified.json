@@ -1,0 +1,53 @@
+{
+  "n_bins": 3,
+  "testsets": {
+    "scatter": {
+      "source": "data/sim_scatter/test.npz",
+      "n_samples": 200,
+      "bins": [
+        {
+          "label": "最规整",
+          "spread_mean": 2.12,
+          "spread_range": [
+            1.4,
+            2.68
+          ],
+          "n": 67,
+          "methods": {
+            "unet": 3.85,
+            "unet_scatter": 3.824,
+            "pgmpr": 3.586
+          }
+        },
+        {
+          "label": "中等",
+          "spread_mean": 3.6,
+          "spread_range": [
+            2.69,
+            4.6
+          ],
+          "n": 67,
+          "methods": {
+            "unet": 5.124,
+            "unet_scatter": 5.319,
+            "pgmpr": 4.877
+          }
+        },
+        {
+          "label": "最散落",
+          "spread_mean": 5.76,
+          "spread_range": [
+            4.6,
+            8.31
+          ],
+          "n": 66,
+          "methods": {
+            "unet": 6.221,
+            "unet_scatter": 6.398,
+            "pgmpr": 5.857
+          }
+        }
+      ]
+    }
+  }
+}

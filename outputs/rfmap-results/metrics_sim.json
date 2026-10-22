@@ -1,0 +1,208 @@
+{
+  "model_labels": {
+    "ae": "方案一 · 卷积补全自编码器",
+    "unet": "方案二 · 小型 U-Net",
+    "resunet": "方案三 · 插值引导残差 U-Net",
+    "unet_scatter": "方案四 · 散落布点训练的 U-Net",
+    "pgmpr": "方案五 · 物理引导多先验残差 U-Net"
+  },
+  "baseline_labels": {
+    "nearest": "基线 · 最近邻",
+    "idw": "基线 · 反距离加权 (IDW, p=2)",
+    "rbf": "基线 · 零均值 RBF（对照，无趋势项）",
+    "gp": "基线 · 对数距离趋势 + RBF 残差"
+  },
+  "tta_enabled": true,
+  "testsets": {
+    "mixed": {
+      "source": "data/sim/test.npz",
+      "n_samples": 200,
+      "obs_count_mean": 18.09,
+      "obs_count_range": [
+        5,
+        30
+      ],
+      "methods": {
+        "ae": {
+          "rmse_mean": 4.151,
+          "rmse_median": 3.923,
+          "rmse_p90": 5.979,
+          "runs": 200
+        },
+        "unet": {
+          "rmse_mean": 4.224,
+          "rmse_median": 3.983,
+          "rmse_p90": 6.306,
+          "runs": 200
+        },
+        "resunet": {
+          "rmse_mean": 4.124,
+          "rmse_median": 3.918,
+          "rmse_p90": 6.147,
+          "runs": 200
+        },
+        "unet_scatter": {
+          "rmse_mean": 4.226,
+          "rmse_median": 3.953,
+          "rmse_p90": 6.022,
+          "runs": 200
+        },
+        "pgmpr": {
+          "rmse_mean": 3.916,
+          "rmse_median": 3.678,
+          "rmse_p90": 5.846,
+          "runs": 200
+        },
+        "nearest": {
+          "rmse_mean": 5.397,
+          "rmse_median": 5.08,
+          "rmse_p90": 7.444,
+          "runs": 200
+        },
+        "idw": {
+          "rmse_mean": 4.901,
+          "rmse_median": 4.611,
+          "rmse_p90": 6.695,
+          "runs": 200
+        },
+        "rbf": {
+          "rmse_mean": 21.636,
+          "rmse_median": 20.353,
+          "rmse_p90": 34.357,
+          "runs": 200
+        },
+        "gp": {
+          "rmse_mean": 4.654,
+          "rmse_median": 4.299,
+          "rmse_p90": 7.22,
+          "runs": 200
+        },
+        "ae_tta": {
+          "rmse_mean": 3.89,
+          "rmse_median": 3.798,
+          "rmse_p90": 5.503,
+          "runs": 200
+        },
+        "unet_tta": {
+          "rmse_mean": 3.988,
+          "rmse_median": 3.807,
+          "rmse_p90": 5.753,
+          "runs": 200
+        },
+        "resunet_tta": {
+          "rmse_mean": 3.938,
+          "rmse_median": 3.8,
+          "rmse_p90": 5.538,
+          "runs": 200
+        },
+        "unet_scatter_tta": {
+          "rmse_mean": 4.053,
+          "rmse_median": 3.901,
+          "rmse_p90": 5.725,
+          "runs": 200
+        },
+        "pgmpr_tta": {
+          "rmse_mean": 3.699,
+          "rmse_median": 3.499,
+          "rmse_p90": 5.223,
+          "runs": 200
+        }
+      }
+    },
+    "scatter": {
+      "source": "data/sim_scatter/test.npz",
+      "n_samples": 200,
+      "obs_count_mean": 18.09,
+      "obs_count_range": [
+        5,
+        30
+      ],
+      "methods": {
+        "ae": {
+          "rmse_mean": 5.139,
+          "rmse_median": 4.696,
+          "rmse_p90": 7.991,
+          "runs": 200
+        },
+        "unet": {
+          "rmse_mean": 5.059,
+          "rmse_median": 4.665,
+          "rmse_p90": 7.759,
+          "runs": 200
+        },
+        "resunet": {
+          "rmse_mean": 5.089,
+          "rmse_median": 4.786,
+          "rmse_p90": 7.844,
+          "runs": 200
+        },
+        "unet_scatter": {
+          "rmse_mean": 5.174,
+          "rmse_median": 4.801,
+          "rmse_p90": 7.718,
+          "runs": 200
+        },
+        "pgmpr": {
+          "rmse_mean": 4.768,
+          "rmse_median": 4.345,
+          "rmse_p90": 7.408,
+          "runs": 200
+        },
+        "nearest": {
+          "rmse_mean": 6.408,
+          "rmse_median": 6.097,
+          "rmse_p90": 9.391,
+          "runs": 200
+        },
+        "idw": {
+          "rmse_mean": 6.124,
+          "rmse_median": 5.962,
+          "rmse_p90": 8.948,
+          "runs": 200
+        },
+        "rbf": {
+          "rmse_mean": 35.745,
+          "rmse_median": 34.902,
+          "rmse_p90": 53.724,
+          "runs": 200
+        },
+        "gp": {
+          "rmse_mean": 5.896,
+          "rmse_median": 5.134,
+          "rmse_p90": 10.555,
+          "runs": 200
+        },
+        "ae_tta": {
+          "rmse_mean": 4.76,
+          "rmse_median": 4.424,
+          "rmse_p90": 7.369,
+          "runs": 200
+        },
+        "unet_tta": {
+          "rmse_mean": 4.768,
+          "rmse_median": 4.488,
+          "rmse_p90": 7.63,
+          "runs": 200
+        },
+        "resunet_tta": {
+          "rmse_mean": 4.828,
+          "rmse_median": 4.435,
+          "rmse_p90": 7.333,
+          "runs": 200
+        },
+        "unet_scatter_tta": {
+          "rmse_mean": 4.817,
+          "rmse_median": 4.416,
+          "rmse_p90": 7.28,
+          "runs": 200
+        },
+        "pgmpr_tta": {
+          "rmse_mean": 4.492,
+          "rmse_median": 4.097,
+          "rmse_p90": 6.733,
+          "runs": 200
+        }
+      }
+    }
+  }
+}

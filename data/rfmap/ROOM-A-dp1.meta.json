@@ -1,0 +1,21 @@
+{
+  "map_id": "ROOM-A-dp1",
+  "room": "ROOM-A",
+  "height_m": 1.0,
+  "ap_id": "",
+  "device": {
+    "ip": "192.168.31.71",
+    "ssid": "Project 5 the FIRST Group",
+    "band": "2g",
+    "channel": 11,
+    "rssi_dbm": -28
+  },
+  "grid": "0,0,6,4,1",
+  "points_total": 35,
+  "points_recorded_before": 0,
+  "seconds_per_point": 20.0,
+  "sample_interval_s": 0.5,
+  "operator": "lvzhaonan",
+  "note": "",
+  "started_at": "2026-10-18T20:15:30"
+}

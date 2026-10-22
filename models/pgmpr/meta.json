@@ -1,0 +1,40 @@
+{
+  "model": "pgmpr",
+  "label": "方案五 · 物理引导多先验残差 U-Net",
+  "width": 24,
+  "params": 1084489,
+  "normalizer": {
+    "mean": -55.58557891845703,
+    "std": 9.672722816467285
+  },
+  "grid": {
+    "x0": 0.0,
+    "y0": 0.0,
+    "cell": 0.2,
+    "nx": 64,
+    "ny": 64,
+    "x_max": 12.8,
+    "y_max": 12.8,
+    "room_w": 12.643,
+    "room_h": 11.731
+  },
+  "has_prior": true,
+  "input_mode": "multiprior",
+  "n_input_channels": 7,
+  "loss": "weighted",
+  "train_files": [
+    "data/sim/train.npz",
+    "data/sim_scatter/train.npz"
+  ],
+  "val_file": "data/sim/val.npz",
+  "train_size": 2400,
+  "val_size": 200,
+  "epochs_run": 90,
+  "best_epoch": 54,
+  "best_val_loss": 0.20063370287418367,
+  "seed": 7,
+  "lr": 0.002,
+  "batch_size": 16,
+  "device": "mps",
+  "seconds": 311.5
+}

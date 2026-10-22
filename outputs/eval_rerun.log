@@ -1,0 +1,15 @@
+== 真实数据评估 ==
+  [corner] 输入 43 隐藏 6
+  [center] 输入 40 隐藏 9
+  [sweep K=5] ae=9.13  unet=10.95  resunet=6.34  nearest=5.44  idw=4.86  rbf=19.17  gp=5.82
+  [sweep K=10] ae=6.87  unet=7.36  resunet=4.99  nearest=5.18  idw=4.14  rbf=19.08  gp=4.30
+  [sweep K=15] ae=6.68  unet=6.60  resunet=5.16  nearest=4.65  idw=3.92  rbf=18.59  gp=4.25
+  [sweep K=20] ae=6.24  unet=5.39  resunet=4.82  nearest=4.44  idw=3.91  rbf=15.74  gp=3.95
+  [sweep K=30] ae=6.03  unet=4.82  resunet=4.54  nearest=4.26  idw=3.63  rbf=10.99  gp=3.86
+  写出 -> outputs/rfmap-results/metrics_real.json
+== 仿真跨户型评估 ==
+  50/200
+  100/200
+  150/200
+  200/200
+  写出 -> outputs/rfmap-results/metrics_sim.json

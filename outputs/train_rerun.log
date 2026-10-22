@@ -1,0 +1,128 @@
+== 训练 方案一 · 卷积补全自编码器 (ae) ==
+  ep    0  train 1.00460  val 1.04807  best 1.04807@0  11s
+  ep   10  train 1.00065  val 1.04762  best 1.04734@9  128s
+  ep   20  train 1.00017  val 1.04737  best 1.04734@9  243s
+  ep   30  train 1.00080  val 1.04746  best 1.04734@9  357s
+  ep   40  train 0.71840  val 0.74128  best 0.74128@40  469s
+  ep   50  train 0.29337  val 0.28749  best 0.28749@50  582s
+  ep   60  train 0.23231  val 0.24578  best 0.24088@57  695s
+  ep   70  train 0.21345  val 0.22433  best 0.22433@70  1976s
+  ep   80  train 0.16698  val 0.22115  best 0.21698@79  2087s
+  ep   90  train 0.13274  val 0.22664  best 0.21698@79  2198s
+  ep  100  train 0.10891  val 0.23130  best 0.21698@79  2313s
+  早停于 epoch 109（best=0.21698 @ 79）
+  保存 -> ./models/ae  (best val 0.21698 @ ep 79, 2413.8s)
+== 训练 方案二 · 小型 U-Net (unet) ==
+  ep    0  train 0.91154  val 0.47653  best 0.47653@0  14s
+  ep   10  train 0.20080  val 0.23989  best 0.23645@6  155s
+  ep   20  train 0.11256  val 0.22696  best 0.22012@15  296s
+  ep   30  train 0.06237  val 0.22962  best 0.22012@15  437s
+  ep   40  train 0.05395  val 0.24570  best 0.22012@15  577s
+  早停于 epoch 45（best=0.22012 @ 15）
+  保存 -> ./models/unet  (best val 0.22012 @ ep 15, 646.1s)
+== 训练 方案三 · 插值引导残差 U-Net (resunet) ==
+  ep    0  train 0.32756  val 0.28674  best 0.28674@0  14s
+  ep   10  train 655.85530  val 0.29588  best 0.27222@8  163s
+  ep   20  train 0.45460  val 0.27869  best 0.26698@19  319s
+  ep   30  train 0.22077  val 0.23058  best 0.23058@30  475s
+  ep   40  train 0.16854  val 0.23120  best 0.22059@37  630s
+  ep   50  train 0.12355  val 0.22998  best 0.21703@44  786s
+  ep   60  train 0.08047  val 0.23850  best 0.21703@44  942s
+  ep   70  train 0.05181  val 0.25233  best 0.21703@44  1098s
+  早停于 epoch 74（best=0.21703 @ 44）
+  保存 -> ./models/resunet  (best val 0.21703 @ ep 44, 1160.6s)
+{
+  "ae": {
+    "model": "ae",
+    "label": "方案一 · 卷积补全自编码器",
+    "width": 24,
+    "params": 428377,
+    "normalizer": {
+      "mean": -55.58557891845703,
+      "std": 9.672722816467285
+    },
+    "grid": {
+      "x0": 0.0,
+      "y0": 0.0,
+      "cell": 0.2,
+      "nx": 64,
+      "ny": 64,
+      "x_max": 12.8,
+      "y_max": 12.8,
+      "room_w": 12.643,
+      "room_h": 11.731
+    },
+    "has_prior": false,
+    "train_size": 1200,
+    "val_size": 200,
+    "epochs_run": 110,
+    "best_epoch": 79,
+    "best_val_loss": 0.21698423326015473,
+    "seed": 7,
+    "lr": 0.002,
+    "batch_size": 16,
+    "seconds": 2413.8
+  },
+  "unet": {
+    "model": "unet",
+    "label": "方案二 · 小型 U-Net",
+    "width": 24,
+    "params": 1083625,
+    "normalizer": {
+      "mean": -55.58557891845703,
+      "std": 9.672722816467285
+    },
+    "grid": {
+      "x0": 0.0,
+      "y0": 0.0,
+      "cell": 0.2,
+      "nx": 64,
+      "ny": 64,
+      "x_max": 12.8,
+      "y_max": 12.8,
+      "room_w": 12.643,
+      "room_h": 11.731
+    },
+    "has_prior": false,
+    "train_size": 1200,
+    "val_size": 200,
+    "epochs_run": 46,
+    "best_epoch": 15,
+    "best_val_loss": 0.2201208645105362,
+    "seed": 7,
+    "lr": 0.002,
+    "batch_size": 16,
+    "seconds": 646.1
+  },
+  "resunet": {
+    "model": "resunet",
+    "label": "方案三 · 插值引导残差 U-Net",
+    "width": 24,
+    "params": 1083841,
+    "normalizer": {
+      "mean": -55.58557891845703,
+      "std": 9.672722816467285
+    },
+    "grid": {
+      "x0": 0.0,
+      "y0": 0.0,
+      "cell": 0.2,
+      "nx": 64,
+      "ny": 64,
+      "x_max": 12.8,
+      "y_max": 12.8,
+      "room_w": 12.643,
+      "room_h": 11.731
+    },
+    "has_prior": true,
+    "train_size": 1200,
+    "val_size": 200,
+    "epochs_run": 75,
+    "best_epoch": 44,
+    "best_val_loss": 0.21703231036663057,
+    "seed": 7,
+    "lr": 0.002,
+    "batch_size": 16,
+    "seconds": 1160.6
+  }
+}
