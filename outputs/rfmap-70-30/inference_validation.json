@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "fixture_max_abs_db": 0.0,
+  "geometry_only_js_python_cases": [
+    {
+      "case": "sample",
+      "feature_max_abs_error": 0.0,
+      "python_js_max_abs_db": 1.1444091796875e-05,
+      "finite": true
+    },
+    {
+      "case": "2x2",
+      "feature_max_abs_error": 0.0,
+      "python_js_max_abs_db": 1.1444091796875e-05,
+      "finite": true
+    },
+    {
+      "case": "50x50",
+      "feature_max_abs_error": 0.0,
+      "python_js_max_abs_db": 1.1444091796875e-05,
+      "finite": true
+    }
+  ],
+  "audited_cli_read_files": [
+    "/Users/lvzhaonan/Desktop/Project 5/outputs/rfmap-70-30/studio/sample_room.json",
+    "/Users/lvzhaonan/Desktop/Project 5/outputs/rfmap-70-30/deployment/model.json"
+  ],
+  "only_project_and_deployment_weights_read": true,
+  "hidden_data_files_read": false,
+  "input_channels": 9,
+  "prediction_shape": [
+    32,
+    32
+  ]
+}

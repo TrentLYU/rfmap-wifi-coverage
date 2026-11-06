@@ -150,15 +150,18 @@
   // ---------- 对外接口：与 app.js 约定一致 ----------
   function nnInfer(inputObj) {
     var nx = inputObj.nx, ny = inputObj.ny;
-    var X = new Float32Array(3 * nx * ny);
+    var inCh = MODEL.meta.n_input_channels || 3;
+    var X = new Float32Array(inCh * nx * ny);
     var mean = NORM.mean, std = NORM.std;
     var obs = inputObj.obs, om = inputObj.obsMask, rm = inputObj.roomMask;
+    var fm = inputObj.furnitureMask;
     for (var i = 0; i < nx * ny; i++) {
       X[i] = om[i] > 0.5 ? (obs[i] - mean) / std : 0;
       X[nx * ny + i] = om[i];
       X[2 * nx * ny + i] = rm[i];
+      if (inCh >= 4) X[3 * nx * ny + i] = fm ? fm[i] : 0;
     }
-    var z = forward(X, 3, ny, nx);
+    var z = forward(X, inCh, ny, nx);
     var pred = new Float32Array(nx * ny);
     for (var k = 0; k < nx * ny; k++) {
       pred[k] = rm[k] > 0.5 ? z[k] * std + mean : -120;
@@ -168,5 +171,5 @@
 
   window.RFM_Infer = nnInfer;
   window.RFM_InferKind = 'nn';
-  console.log('已加载神经网络推理（SmallUNet, ' + MODEL.n_params + ' 参数）');
+  console.log('已加载神经网络推理（' + MODEL.label + ', ' + MODEL.n_params + ' 参数）');
 })();

@@ -644,7 +644,8 @@ def level_counts(field, edges=None):
 
 
 def fig_levels64(panels, out_path, grid=None, edges=None, suptitle=None,
-                 points=None, figsize=None, cell_line=0.35, note=None):
+                  points=None, figsize=None, cell_line=0.35, note=None,
+                  furniture=None, reverse_x=True):
     """把 RSSI 场按信号强弱分成 5 级，画成 64 x 64 的像素块图。
 
     ``panels`` = [(标题, 场), ...]，每个场是 ny x nx 的 RSSI（dBm），房间外为 NaN。
@@ -680,12 +681,28 @@ def fig_levels64(panels, out_path, grid=None, edges=None, suptitle=None,
                             shading='nearest', edgecolors=(1.0, 1.0, 1.0, 0.55),
                             linewidth=cell_line, antialiased=True, zorder=1)
         draw_room(ax, grid)
+        if furniture:
+            from matplotlib.patches import Circle
+            for item in furniture:
+                is_table = item.get('kind') == 'table'
+                ax.add_patch(Circle(
+                    (item['x'], item['y']), item.get('radius', 0.4),
+                    facecolor=('#d9a441' if is_table else '#5b9bd5'),
+                    edgecolor='#333333', linewidth=0.8, alpha=0.82, zorder=7))
+                ax.text(item['x'], item['y'], '桌' if is_table else '椅',
+                        ha='center', va='center', fontsize=6.5, color='#17242f',
+                        zorder=8)
         if points:
             for p in points:
                 ax.scatter([p.x], [p.y], s=24, c='#ffd166', edgecolors='black',
                            linewidths=0.7, zorder=8)
         ax.set_title(title, fontsize=11.5)
-        _apply_orientation(ax, grid)
+        if reverse_x:
+            _apply_orientation(ax, grid)
+        else:
+            ax.set_xlim(grid.x0, grid.x_max)
+            ax.set_ylim(grid.y0, grid.y_max)
+            ax.set_aspect('equal')
         ax.set_xlabel('')
         ax.set_ylabel('')
     for ax in axes[len(panels):]:

@@ -1,0 +1,18 @@
+[
+  {
+    "epoch": 1,
+    "train_huber_normalized": 0.31742286682128906
+  },
+  {
+    "epoch": 2,
+    "train_huber_normalized": 0.2774506211280823
+  },
+  {
+    "epoch": 3,
+    "train_huber_normalized": 0.2490767538547516
+  },
+  {
+    "epoch": 4,
+    "train_huber_normalized": 0.23549866676330566
+  }
+]

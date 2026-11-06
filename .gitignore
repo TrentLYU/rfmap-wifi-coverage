@@ -26,7 +26,6 @@ outputs/figures/geometry.png
 outputs/figures/data_profile.png
 
 
-
 # cby47 本地测量、独立比较实验输出与小车构建文件
 /private/
 /experiments/rssi_baselines/optimized/
@@ -39,3 +38,17 @@ outputs/figures/data_profile.png
 *.tmp
 .env
 .env.*
+!outputs/rfmap-70-30/training.log
+
+# ---- 汇报与个人材料（不入仓库） ----
+01 Project-Based_CST_AI_Foundations_Syllabus.pdf
+RF-Map项目进度汇报.pptx
+展示/
+outputs/RF-Map项目进度汇报*
+outputs/RF-Map答辩*
+outputs/*.zip
+outputs/_work/
+
+# ---- 家具实验大体积成果（77MB+40MB，仅代码入库） ----
+outputs/rfmap-furniture/
+outputs/rfmap-furniture 2/

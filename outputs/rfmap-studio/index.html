@@ -3,404 +3,128 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RF Map Studio - Wi-Fi RSSI 热力图工作台</title>
+<title>RF Map Studio · 家具感知 Wi-Fi 覆盖预测</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <header class="topbar">
-  <div class="brand">
-    RF Map Studio
-    <span class="sub">纯前端 Wi-Fi RSSI 覆盖预测</span>
-  </div>
+  <div class="brand">RF Map Studio<span class="sub">家具感知神经网络 · 少量实测点生成整屋 RSSI 预测</span></div>
   <div class="stats">
     <div class="stat"><span class="k">房间面积</span><span class="v" id="infoArea">-</span></div>
-    <div class="stat"><span class="k">测点数</span><span class="v" id="infoPoints">0</span></div>
+    <div class="stat"><span class="k">实测点</span><span class="v" id="infoPoints">0</span></div>
+    <div class="stat"><span class="k">家具</span><span class="v" id="infoFurniture">0</span></div>
     <div class="stat"><span class="k">推理耗时</span><span class="v" id="infoTime">-</span></div>
-    <div class="stat"><span class="k">色标范围</span><span class="v" id="infoRange">-100 ~ -40 dBm</span></div>
+    <div class="stat"><span class="k">显示</span><span class="v" id="infoRange">连续色标</span></div>
   </div>
 </header>
 
 <main class="layout">
-
   <section class="canvas-wrap">
     <canvas id="scene"></canvas>
     <div id="tooltip" class="tooltip hidden"></div>
   </section>
 
   <aside class="panel">
-
     <div class="block">
-      <h2>户型</h2>
+      <h2>1. 户型与固定结构</h2>
+      <div class="row"><label for="roomWNum">宽度 x</label><input type="number" id="roomWNum" min="2" max="12.8" step="0.001" value="12.643"><span class="unit">m</span></div>
+      <input type="range" id="roomWRange" min="2" max="12.8" step="0.001" value="12.643">
+      <div class="row"><label for="roomHNum">高度 y</label><input type="number" id="roomHNum" min="2" max="12.8" step="0.001" value="11.731"><span class="unit">m</span></div>
+      <input type="range" id="roomHRange" min="2" max="12.8" step="0.001" value="11.731">
+      <div class="row"><label for="doorWNum">门洞宽度</label><input type="number" id="doorWNum" min="0.6" max="6" step="0.001" value="2.330"><span class="unit">m</span></div>
       <div class="row">
-        <label for="roomWNum">房间宽度 x</label>
-        <input type="number" id="roomWNum" min="2" max="15" step="0.001" value="12.643">
-        <span class="unit">m</span>
+        <button id="btnAddObs" class="btn ghost">添加墙体/柱体</button>
+        <button id="btnResetRoom" class="btn ghost">恢复实验户型</button>
       </div>
-      <input type="range" id="roomWRange" min="2" max="15" step="0.001" value="12.643">
-      <div class="row">
-        <label for="roomHNum">房间高度 y</label>
-        <input type="number" id="roomHNum" min="2" max="15" step="0.001" value="11.731">
-        <span class="unit">m</span>
-      </div>
-      <input type="range" id="roomHRange" min="2" max="15" step="0.001" value="11.731">
-      <div class="row">
-        <label for="doorWNum">门洞宽度</label>
-        <input type="number" id="doorWNum" min="0.6" max="6" step="0.001" value="2.330">
-        <span class="unit">m</span>
-      </div>
-      <button id="btnResetRoom" class="btn ghost">恢复默认户型</button>
-      <p class="hint">画布左上角的手柄可拖动调整房间宽高；也可直接输入或拖动滑杆。</p>
-    </div>
-
-    <div class="block">
-      <h2>障碍物（矩形）</h2>
-      <button id="btnAddObs" class="btn ghost">添加矩形障碍物</button>
       <ul id="obsList" class="list"></ul>
       <div id="obsEditor" class="editor hidden">
-        <div class="row">
-          <label for="obsX">x</label>
-          <input type="number" id="obsX" step="0.001" min="0">
-          <label for="obsY">y</label>
-          <input type="number" id="obsY" step="0.001" min="0">
-        </div>
-        <div class="row">
-          <label for="obsW">宽</label>
-          <input type="number" id="obsW" step="0.001" min="0.1">
-          <label for="obsH">高</label>
-          <input type="number" id="obsH" step="0.001" min="0.1">
-        </div>
+        <div class="row"><label for="obsX">x</label><input type="number" id="obsX" step="0.001" min="0"><label for="obsY">y</label><input type="number" id="obsY" step="0.001" min="0"></div>
+        <div class="row"><label for="obsW">宽</label><input type="number" id="obsW" step="0.001" min="0.1"><label for="obsH">高</label><input type="number" id="obsH" step="0.001" min="0.1"></div>
       </div>
+      <p class="hint">当前模型支持 12.8 × 12.8 m 以内的矩形户型；固定柱体会从房间有效区扣除。拖动蓝色角手柄可调整宽高。</p>
     </div>
 
     <div class="block">
-      <h2>测点</h2>
+      <h2>2. 虚拟家具（参与预测）</h2>
       <div class="row">
-        <button id="btnLoadSample" class="btn primary">载入示例数据（49 点）</button>
-        <button id="btnClearPoints" class="btn ghost">清空测点</button>
+        <select id="furnitureType" aria-label="家具类型">
+          <option value="table">桌子</option><option value="chair">椅子</option>
+          <option value="sofa">沙发</option><option value="bed">床</option><option value="cabinet">柜子</option>
+        </select>
+        <button id="btnAddFurniture" class="btn primary">添加家具</button>
+        <button id="btnClearFurniture" class="btn ghost">清空</button>
       </div>
-      <p class="hint">在画布房间内部单击添加测点，随即弹出输入框填写 RSSI（-100 ~ 0 dBm）。
-        拖动测点可移动，右键单击或列表内按钮可删除。</p>
-      <p class="hint strong">已添加测点：<span id="pointCount">0</span> 个</p>
+      <ul id="furnitureList" class="list"></ul>
+      <div id="furnitureEditor" class="editor hidden">
+        <div class="row"><label for="furnitureX">中心 x</label><input type="number" id="furnitureX" step="0.05" min="0"><label for="furnitureY">中心 y</label><input type="number" id="furnitureY" step="0.05" min="0"></div>
+        <div class="row"><label for="furnitureW">宽</label><input type="number" id="furnitureW" step="0.05" min="0.2"><label for="furnitureH">深</label><input type="number" id="furnitureH" step="0.05" min="0.2"></div>
+      </div>
+      <p class="hint">家具可拖动、右键删除。桌/椅默认直径 0.8 m；其他类型按矩形占据处理。家具区域仍可测信号，不会被当成墙。</p>
+      <p class="hint strong">模型只学习“家具占据”，不区分木质/金属等材质；沙发、床、柜子是等效占据推演，需实测校准。</p>
+    </div>
+
+    <div class="block">
+      <h2>3. 输入少量实测点</h2>
+      <div class="row">
+        <button id="btnLoadSample" class="btn primary">载入家具版示例（12 点）</button>
+        <button id="btnClearPoints" class="btn ghost">清空</button>
+      </div>
+      <div class="row"><button id="btnImportPoints" class="btn ghost">导入测点 CSV</button><button id="btnExportCsv" class="btn ghost">导出测点 CSV</button></div>
+      <input id="pointsCsvInput" type="file" accept=".csv,text/csv" class="hidden">
+      <p class="hint">单击室内空白处添加测点并填写 RSSI；拖动调整，右键删除。建议至少 6 个点并覆盖不同位置，3 个点仅可快速试算。</p>
+      <p class="hint strong">已添加：<span id="pointCount">0</span> 个</p>
       <ul id="pointList" class="list"></ul>
     </div>
 
     <div class="block">
-      <h2>热力图</h2>
-      <div class="row">
-        <button id="btnInfer" class="btn primary">生成热力图</button>
-        <button id="btnClearHeat" class="btn ghost">清除热力图</button>
-      </div>
-      <div class="row">
-        <button id="btnExportPng" class="btn ghost">导出 PNG</button>
-        <button id="btnExportCsv" class="btn ghost">导出测点 CSV</button>
-      </div>
-      <p class="hint">推理接口：<code>window.RFM_Infer(inputObj)</code>。当前为占位实现（反距离加权插值 IDW，1/d²，6 m 回退全局均值），可被神经网络推理整体替换。</p>
+      <h2>4. 预测、家具对照与导出</h2>
+      <div class="row"><label for="displayMode">色标</label><select id="displayMode"><option value="continuous">连续 RSSI</option><option value="levels">五级信号等级</option></select></div>
+      <div class="row"><button id="btnInfer" class="btn primary">生成整屋预测</button><button id="btnClearHeat" class="btn ghost">清除</button></div>
+      <div class="row"><button id="btnCompareFurniture" class="btn ghost">对比“撤掉全部家具”</button></div>
+      <p id="comparisonResult" class="hint">对照会保持户型和测点不变，只把家具输入通道置零；结果是模型推演，不是家具因果实测。</p>
+      <div class="row"><button id="btnExportPng" class="btn ghost">导出 PNG</button><button id="btnExportGrid" class="btn ghost">导出预测 CSV</button></div>
+      <div class="row"><button id="btnExportProject" class="btn ghost">保存工程 JSON</button><button id="btnImportProject" class="btn ghost">打开工程 JSON</button></div>
+      <input id="projectInput" type="file" accept=".json,application/json" class="hidden">
     </div>
 
     <div class="block">
-      <h2>坐标约定</h2>
-      <p class="hint">
-        坐标系原点位于房间内部右下角；x 轴正向指向左，y 轴正向指向上。
-        底部门居中。<br>
-        画布绘制时 x 方向已反向，保证与现场方位一致。
-      </p>
+      <h2>模型与坐标</h2>
+      <p id="modelInfo" class="hint">正在读取模型信息…</p>
+      <p class="hint">原点在室内西南角，x 向东、y 向北，与带家具实验报告一致。网页推理不读取隐藏答案，也不会把预测值冒充实测。</p>
+      <p class="hint strong">跨房间结果会受路由器位置、墙体、多径和家具材质影响；新家使用前应保留若干点做独立验收。</p>
     </div>
-
   </aside>
 </main>
 
 <div id="rssiModal" class="modal hidden">
-  <div class="modal-box">
-    <h3>输入测点 RSSI</h3>
-    <p class="hint" id="rssiModalPos">-</p>
-    <div class="row">
-      <input type="number" id="rssiInput" min="-100" max="0" step="0.1" value="-45">
-      <span class="unit">dBm</span>
-    </div>
+  <div class="modal-box"><h3>输入实测 RSSI</h3><p class="hint" id="rssiModalPos">-</p>
+    <div class="row"><input type="number" id="rssiInput" min="-100" max="0" step="0.1" value="-45"><span class="unit">dBm</span></div>
     <p class="err hidden" id="rssiErr">请输入 -100 ~ 0 之间的数值。</p>
-    <div class="modal-actions">
-      <button id="rssiOk" class="btn primary">确定</button>
-      <button id="rssiCancel" class="btn ghost">取消</button>
-    </div>
+    <div class="modal-actions"><button id="rssiOk" class="btn primary">确定</button><button id="rssiCancel" class="btn ghost">取消</button></div>
   </div>
 </div>
 
 <script id="sampleRoomData" type="application/json">
 {
-  "name": "ROOM-A 示例数据",
-  "note": "坐标为房间内部坐标系（原点在右下角，x 向左为正，y 向上为正），单位米。",
-  "room": {
-    "w": 12.643,
-    "h": 11.731,
-    "door": {
-      "w": 2.33,
-      "edge": "bottom",
-      "centered": true
-    },
-    "obstacles": [
-      {
-        "x": 11.813,
-        "y": 5.761,
-        "w": 0.83,
-        "h": 1.01,
-        "name": "结构柱"
-      }
-    ]
-  },
-  "grid": {
-    "x0": 0.0,
-    "y0": 0.0,
-    "cell": 0.2,
-    "nx": 64,
-    "ny": 64
-  },
+  "name": "带家具实验环境 · 12 个稀疏实测点",
+  "coordinate": "原点在西南角，x 向东，y 向北；测点来自放家具数据.xlsx 的规范化实测记录",
+  "room": {"w":12.643,"h":11.731,"door":{"w":2.33},"obstacles":[{"x":11.813,"y":5.761,"w":0.83,"h":1.01,"name":"结构柱"}]},
+  "grid": {"x0":0,"y0":0,"cell":0.2,"nx":64,"ny":64},
+  "furniture": [
+    {"kind":"chair","name":"椅子1","x":2.3,"y":3.5,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"chair","name":"椅子2","x":2.5,"y":4.8,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"chair","name":"椅子3","x":3.4,"y":4.5,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"table","name":"桌子1","x":2.8,"y":4.2,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"chair","name":"椅子4","x":10.643,"y":9.131,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"chair","name":"椅子5","x":9.243,"y":9.531,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"chair","name":"椅子6","x":9.943,"y":10.531,"w":0.8,"h":0.8,"shape":"circle"},
+    {"kind":"table","name":"桌子2","x":10.043,"y":9.731,"w":0.8,"h":0.8,"shape":"circle"}
+  ],
   "points": [
-    {
-      "x": 0.0,
-      "y": 0.0,
-      "rssi": -44.0
-    },
-    {
-      "x": 0.0,
-      "y": 1.9552,
-      "rssi": -42.0
-    },
-    {
-      "x": 0.0,
-      "y": 3.9103,
-      "rssi": -39.0
-    },
-    {
-      "x": 0.0,
-      "y": 5.8655,
-      "rssi": -39.0
-    },
-    {
-      "x": 0.0,
-      "y": 7.8207,
-      "rssi": -41.0
-    },
-    {
-      "x": 0.0,
-      "y": 9.7758,
-      "rssi": -41.0
-    },
-    {
-      "x": 0.0,
-      "y": 11.731,
-      "rssi": -46.0
-    },
-    {
-      "x": 2.0,
-      "y": 0.0,
-      "rssi": -45.0
-    },
-    {
-      "x": 2.0,
-      "y": 1.9552,
-      "rssi": -39.0
-    },
-    {
-      "x": 2.0,
-      "y": 3.9103,
-      "rssi": -36.0
-    },
-    {
-      "x": 2.0,
-      "y": 5.8655,
-      "rssi": -30.0
-    },
-    {
-      "x": 2.0,
-      "y": 7.8207,
-      "rssi": -31.0
-    },
-    {
-      "x": 2.0,
-      "y": 9.7758,
-      "rssi": -37.0
-    },
-    {
-      "x": 2.0,
-      "y": 11.731,
-      "rssi": -41.0
-    },
-    {
-      "x": 4.0,
-      "y": 0.0,
-      "rssi": -48.0
-    },
-    {
-      "x": 4.0,
-      "y": 1.9552,
-      "rssi": -45.0
-    },
-    {
-      "x": 4.0,
-      "y": 3.9103,
-      "rssi": -44.0
-    },
-    {
-      "x": 4.0,
-      "y": 5.8655,
-      "rssi": -37.0
-    },
-    {
-      "x": 4.0,
-      "y": 7.8207,
-      "rssi": -40.0
-    },
-    {
-      "x": 4.0,
-      "y": 9.7758,
-      "rssi": -48.0
-    },
-    {
-      "x": 4.0,
-      "y": 11.731,
-      "rssi": -40.0
-    },
-    {
-      "x": 6.0,
-      "y": 0.0,
-      "rssi": -48.0
-    },
-    {
-      "x": 6.0,
-      "y": 1.9552,
-      "rssi": -46.0
-    },
-    {
-      "x": 6.0,
-      "y": 3.9103,
-      "rssi": -45.0
-    },
-    {
-      "x": 6.0,
-      "y": 5.8655,
-      "rssi": -43.0
-    },
-    {
-      "x": 6.0,
-      "y": 7.8207,
-      "rssi": -45.0
-    },
-    {
-      "x": 6.0,
-      "y": 9.7758,
-      "rssi": -42.0
-    },
-    {
-      "x": 6.0,
-      "y": 11.731,
-      "rssi": -40.0
-    },
-    {
-      "x": 8.0,
-      "y": 0.0,
-      "rssi": -46.0
-    },
-    {
-      "x": 8.0,
-      "y": 1.9552,
-      "rssi": -45.0
-    },
-    {
-      "x": 8.0,
-      "y": 3.9103,
-      "rssi": -46.0
-    },
-    {
-      "x": 8.0,
-      "y": 5.8655,
-      "rssi": -49.0
-    },
-    {
-      "x": 8.0,
-      "y": 7.8207,
-      "rssi": -41.0
-    },
-    {
-      "x": 8.0,
-      "y": 9.7758,
-      "rssi": -44.0
-    },
-    {
-      "x": 8.0,
-      "y": 11.731,
-      "rssi": -50.0
-    },
-    {
-      "x": 10.3,
-      "y": 0.0,
-      "rssi": -49.0
-    },
-    {
-      "x": 10.3,
-      "y": 1.9552,
-      "rssi": -44.0
-    },
-    {
-      "x": 10.3,
-      "y": 3.9103,
-      "rssi": -45.0
-    },
-    {
-      "x": 10.3,
-      "y": 5.8655,
-      "rssi": -41.0
-    },
-    {
-      "x": 10.3,
-      "y": 7.8207,
-      "rssi": -42.0
-    },
-    {
-      "x": 10.3,
-      "y": 9.7758,
-      "rssi": -41.0
-    },
-    {
-      "x": 10.3,
-      "y": 11.731,
-      "rssi": -44.0
-    },
-    {
-      "x": 11.7,
-      "y": 5.8655,
-      "rssi": -44.0
-    },
-    {
-      "x": 11.7,
-      "y": 8.7005,
-      "rssi": -47.0
-    },
-    {
-      "x": 12.0,
-      "y": 0.0,
-      "rssi": -46.0
-    },
-    {
-      "x": 12.0,
-      "y": 1.9552,
-      "rssi": -47.0
-    },
-    {
-      "x": 12.0,
-      "y": 3.9103,
-      "rssi": -51.0
-    },
-    {
-      "x": 12.0,
-      "y": 9.7758,
-      "rssi": -47.0
-    },
-    {
-      "x": 12.0,
-      "y": 11.731,
-      "rssi": -50.0
-    }
+    {"x":0.9,"y":0,"rssi":-40},{"x":5.09,"y":0,"rssi":-43},{"x":11.09,"y":0,"rssi":-45},
+    {"x":0.9,"y":3.1967,"rssi":-35},{"x":5.09,"y":3.1967,"rssi":-40},{"x":11.09,"y":3.1967,"rssi":-45},
+    {"x":1.09,"y":6.3934,"rssi":-34},{"x":6.09,"y":6.3934,"rssi":-41},{"x":10.09,"y":6.3934,"rssi":-45},
+    {"x":1.09,"y":9.5901,"rssi":-42},{"x":6.09,"y":9.5901,"rssi":-38},{"x":11.09,"y":9.5901,"rssi":-52}
   ]
 }
 </script>

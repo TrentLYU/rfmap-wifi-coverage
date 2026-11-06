@@ -1,0 +1,11 @@
+{
+  "group_overlap": [],
+  "outer_test_never_used_in_training": true,
+  "inner_validation_never_in_inner_inputs": true,
+  "all_source_rows_retained": true,
+  "new_weights_only": true,
+  "all_predictions_finite": true,
+  "prediction_rows": 1890,
+  "metrics_sha256": "508d6b4a340cf9da4a27aa2de62368e540097a3e36700c106af9a805cb139c13",
+  "split_sha256": "271a469d4272a52c1f8cb019c6cf73e13e78560e72b34f01f98dbd4cde5a389e"
+}

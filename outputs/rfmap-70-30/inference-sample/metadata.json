@@ -1,0 +1,50 @@
+{
+  "schema": "rfmap-layout-inference-v1",
+  "input_files": [
+    "/Users/lvzhaonan/Desktop/Project 5/outputs/rfmap-70-30/studio/sample_room.json",
+    "/Users/lvzhaonan/Desktop/Project 5/outputs/rfmap-70-30/deployment/model.json"
+  ],
+  "project_sha256": "d33261c50e9e64c0a6f304b1f223e63c9d8340e570a5c06752a10d8547a19668",
+  "model_sha256": "73a290413063576518edf569d17baa25721c75d0e694f02ff2cbddd7661c644e",
+  "input_channels": "9 geometry-only channels; RSSI and observation-mask channels are identically zero",
+  "measured_data_read": false,
+  "hidden_test_data_read": false,
+  "nx": 32,
+  "ny": 32,
+  "room": {
+    "w": 12.643,
+    "h": 11.731
+  },
+  "ap": {
+    "x": 0,
+    "y": 0,
+    "source": "assumed (0,0); actual AP coordinates not supplied"
+  },
+  "grid_convention": "nodes inclusive of room boundaries; first row y=0; x=i*w/31, y=j*h/31",
+  "grades": {
+    "thresholds": [
+      -80.0,
+      -70.0,
+      -60.0,
+      -50.0
+    ],
+    "names": [
+      "很差",
+      "较差",
+      "一般",
+      "好",
+      "非常好"
+    ],
+    "invalid_grade": 0
+  },
+  "valid_nodes": 1020,
+  "predicted_rssi_range": [
+    -57.919677734375,
+    -30.619966506958008
+  ],
+  "limitations": [
+    "Trained on one numerical room geometry and assumed AP position; changed layouts/AP positions are extrapolation.",
+    "Furniture attenuation defaults are assumptions, not measured per-material calibration.",
+    "The training data do not validate all five signal grades."
+  ]
+}

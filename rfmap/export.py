@@ -30,9 +30,26 @@ from .models import MODEL_LABELS
 
 
 def export_for_web(model_name: str = 'unet', root: str = '.',
-                   out_dir: str = 'outputs/rfmap-studio') -> dict:
-    """导出权重为 ``model_weights.js``，返回导出摘要。"""
-    model, meta, norm = load_trained(model_name, root=root, device='cpu')
+                   out_dir: str = 'outputs/rfmap-studio', furniture: bool = False,
+                   model_dir: str | None = None, finetuned: bool = False) -> dict:
+    """导出 SmallUNet 权重为 ``model_weights.js``，返回导出摘要。
+
+    家具版使用四通道输入；默认导出跨房间预训练权重，只有明确指定
+    ``finetuned=True`` 才导出当前房间 140 点微调权重。
+    """
+    if model_name not in ('unet', 'unet_scatter'):
+        raise ValueError('纯 JS 前向目前只支持 unet / unet_scatter，不支持 AE 或残差先验网络')
+    if furniture:
+        from .furniture_models import load_trained as load_furniture
+        from .furniture_models import MODEL_LABELS as FURNITURE_LABELS
+        model_path = model_dir or os.path.join(root, 'outputs/rfmap-furniture/models', model_name)
+        model, meta, norm = load_furniture(model_path, device='cpu', finetuned=finetuned)
+        label = FURNITURE_LABELS.get(model_name, model_name) + ' · 家具感知'
+    else:
+        if model_dir or finetuned:
+            raise ValueError('--model-dir/--finetuned 仅用于 --furniture 导出')
+        model, meta, norm = load_trained(model_name, root=root, device='cpu')
+        label = MODEL_LABELS.get(model_name, model_name)
     sd = model.state_dict()
 
     manifest, arrays, off = [], [], 0
@@ -48,7 +65,9 @@ def export_for_web(model_name: str = 'unet', root: str = '.',
 
     payload = {
         'model': model_name,
-        'label': MODEL_LABELS.get(model_name, model_name),
+        'label': label,
+        'family': 'furniture' if furniture else 'base',
+        'finetuned': bool(finetuned),
         'meta': meta,
         'n_params': int(off),
         'weight_bytes': len(blob),
@@ -72,6 +91,9 @@ def export_for_web(model_name: str = 'unet', root: str = '.',
         'weight_kb': round(len(blob) / 1024, 1),
         'n_tensors': len(manifest),
         'model': model_name,
+        'family': payload['family'],
+        'finetuned': payload['finetuned'],
+        'n_input_channels': int(meta.get('n_input_channels', 3)),
         'normalizer': norm.to_dict(),
     }
     return summary
@@ -91,7 +113,7 @@ def write_js_inference(out_dir: str = 'outputs/rfmap-studio') -> str:
     * ``conv_transpose2``：k=2、stride=2 —— 用"像素重排"等价实现
       （PyTorch 的 ConvTranspose2d 在 stride == kernel 时不会重叠相加，
       可直接写成每个输入像素向 2x2 输出块散射）；
-    * 输入 3 通道（稀疏观测 / 观测掩码 / 房间掩码），输出 1 通道。
+    * 基础版输入 3 通道；家具版输入 4 通道（追加家具占据掩码），输出 1 通道。
 
     重要：这里**不依赖任何第三方库**，也不使用 WebGL —— 纯 CPU 数组运算。
     64x64 的图，实测一次前向在 M 系列芯片上约 30~60 ms。
@@ -248,15 +270,18 @@ def write_js_inference(out_dir: str = 'outputs/rfmap-studio') -> str:
   // ---------- 对外接口：与 app.js 约定一致 ----------
   function nnInfer(inputObj) {
     var nx = inputObj.nx, ny = inputObj.ny;
-    var X = new Float32Array(3 * nx * ny);
+    var inCh = MODEL.meta.n_input_channels || 3;
+    var X = new Float32Array(inCh * nx * ny);
     var mean = NORM.mean, std = NORM.std;
     var obs = inputObj.obs, om = inputObj.obsMask, rm = inputObj.roomMask;
+    var fm = inputObj.furnitureMask;
     for (var i = 0; i < nx * ny; i++) {
       X[i] = om[i] > 0.5 ? (obs[i] - mean) / std : 0;
       X[nx * ny + i] = om[i];
       X[2 * nx * ny + i] = rm[i];
+      if (inCh >= 4) X[3 * nx * ny + i] = fm ? fm[i] : 0;
     }
-    var z = forward(X, 3, ny, nx);
+    var z = forward(X, inCh, ny, nx);
     var pred = new Float32Array(nx * ny);
     for (var k = 0; k < nx * ny; k++) {
       pred[k] = rm[k] > 0.5 ? z[k] * std + mean : -120;
@@ -266,7 +291,7 @@ def write_js_inference(out_dir: str = 'outputs/rfmap-studio') -> str:
 
   window.RFM_Infer = nnInfer;
   window.RFM_InferKind = 'nn';
-  console.log('已加载神经网络推理（SmallUNet, ' + MODEL.n_params + ' 参数）');
+  console.log('已加载神经网络推理（' + MODEL.label + ', ' + MODEL.n_params + ' 参数）');
 })();
 '''
     os.makedirs(out_dir, exist_ok=True)
@@ -278,11 +303,16 @@ def write_js_inference(out_dir: str = 'outputs/rfmap-studio') -> str:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description='导出 Web 端权重与 JS 推理')
-    ap.add_argument('--model', default='unet')
+    ap.add_argument('--model', default='unet', choices=['unet', 'unet_scatter'])
     ap.add_argument('--root', default='.')
     ap.add_argument('--out-dir', default='outputs/rfmap-studio')
+    ap.add_argument('--furniture', action='store_true', help='导出四通道家具感知模型')
+    ap.add_argument('--model-dir', help='家具模型目录；默认 outputs/rfmap-furniture/models/<model>')
+    ap.add_argument('--finetuned', action='store_true', help='使用当前房间实测微调权重（默认用跨房间预训练权重）')
     args = ap.parse_args(argv)
-    s = export_for_web(args.model, root=args.root, out_dir=args.out_dir)
+    s = export_for_web(args.model, root=args.root, out_dir=args.out_dir,
+                       furniture=args.furniture, model_dir=args.model_dir,
+                       finetuned=args.finetuned)
     p = write_js_inference(args.out_dir)
     print(json.dumps(s, indent=2, ensure_ascii=False))
     print('js ->', p)

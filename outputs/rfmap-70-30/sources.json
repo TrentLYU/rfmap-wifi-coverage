@@ -1,0 +1,10 @@
+{
+  "empty": {
+    "path": "data.xlsx",
+    "sha256": "bde311f42c64312f1037541acd20c9b114c480b0189c5074eaf668e3d71aa8a3"
+  },
+  "furnished": {
+    "path": "放家具数据.xlsx",
+    "sha256": "a87480cd2d10cc0d1f74314a8a415b3e7feb21dab0c9bcebc6c76dbb4a3787c0"
+  }
+}

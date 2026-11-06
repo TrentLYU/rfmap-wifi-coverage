@@ -1,0 +1,58 @@
+{
+  "selection": {
+    "completion": {
+      "ae": {
+        "selected_epoch": 85,
+        "inner_val_mae": 2.4821109771728516
+      },
+      "unet": {
+        "selected_epoch": 66,
+        "inner_val_mae": 2.8359596729278564
+      },
+      "resunet": {
+        "selected_epoch": 33,
+        "inner_val_mae": 2.5196533203125
+      },
+      "unet_scatter": {
+        "selected_epoch": 97,
+        "inner_val_mae": 2.9953737258911133
+      },
+      "pgmpr": {
+        "selected_epoch": 48,
+        "inner_val_mae": 2.652174472808838
+      }
+    },
+    "layout": {
+      "ae": {
+        "selected_epoch": 72,
+        "inner_val_mae": 2.262357711791992
+      },
+      "unet": {
+        "selected_epoch": 10,
+        "inner_val_mae": 2.8415822982788086
+      },
+      "resunet": {
+        "selected_epoch": 4,
+        "inner_val_mae": 2.901042938232422
+      },
+      "unet_scatter": {
+        "selected_epoch": 44,
+        "inner_val_mae": 3.3843657970428467
+      },
+      "pgmpr": {
+        "selected_epoch": 3,
+        "inner_val_mae": 3.0511972904205322
+      }
+    }
+  },
+  "deployment": {
+    "task": "layout",
+    "model": "unet",
+    "selection_rule": "U-Net predeclared for browser runtime before outer test evaluation",
+    "ap": {
+      "x": 0,
+      "y": 0,
+      "source": "assumed (0,0); actual AP coordinates not supplied"
+    }
+  }
+}

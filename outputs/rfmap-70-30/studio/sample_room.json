@@ -1,0 +1,105 @@
+{
+  "schema": "rfmap-70-30-layout-v1",
+  "coordinate": "origin=southwest;x=east;y=north;unit=m",
+  "room": {
+    "w": 12.643,
+    "h": 11.731
+  },
+  "ap": {
+    "x": 0,
+    "y": 0,
+    "source": "assumed (0,0); actual AP coordinates not supplied"
+  },
+  "walls": [
+    {
+      "x": 11.813,
+      "y": 5.761,
+      "w": 0.83,
+      "h": 1.01
+    }
+  ],
+  "furniture": [
+    {
+      "kind": "chair",
+      "name": "椅子1中心",
+      "x": 2.3,
+      "y": 3.5,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "chair",
+      "name": "椅子2中心",
+      "x": 2.5,
+      "y": 4.8,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "chair",
+      "name": "椅子3中心",
+      "x": 3.4,
+      "y": 4.5,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "table",
+      "name": "桌子1",
+      "x": 2.8,
+      "y": 4.2,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "chair",
+      "name": "椅子4中心",
+      "x": 10.643,
+      "y": 9.131,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "chair",
+      "name": "椅子5中心",
+      "x": 9.243,
+      "y": 9.530999999999999,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "chair",
+      "name": "椅子6中心",
+      "x": 9.943000000000001,
+      "y": 10.531,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    },
+    {
+      "kind": "table",
+      "name": "桌子2",
+      "x": 10.043000000000001,
+      "y": 9.731,
+      "w": 0.8,
+      "h": 0.8,
+      "shape": "circle"
+    }
+  ],
+  "model": {
+    "task": "layout",
+    "method": "unet"
+  },
+  "grade_thresholds": [
+    -80,
+    -70,
+    -60,
+    -50
+  ]
+}

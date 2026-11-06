@@ -1,0 +1,1153 @@
+{
+  "passed": true,
+  "n_checks": 217,
+  "n_passed": 217,
+  "n_failed": 0,
+  "metrics_sha256": "508d6b4a340cf9da4a27aa2de62368e540097a3e36700c106af9a805cb139c13",
+  "nearby_cross_partition_node_aliases": [
+    {
+      "node": [
+        25,
+        0
+      ],
+      "points": [
+        {
+          "scenario": "empty",
+          "id": 36,
+          "x": 10.3,
+          "y": 0.0,
+          "split": "train"
+        },
+        {
+          "scenario": "furnished",
+          "id": 11,
+          "x": 10.09,
+          "y": 0.0,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "node": [
+        25,
+        31
+      ],
+      "points": [
+        {
+          "scenario": "empty",
+          "id": 42,
+          "x": 10.3,
+          "y": 11.731,
+          "split": "train"
+        },
+        {
+          "scenario": "furnished",
+          "id": 139,
+          "x": 10.09,
+          "y": 11.731,
+          "split": "test"
+        }
+      ]
+    }
+  ],
+  "alias_interpretation": "Different measured coordinates may round to the same 32-node cell. This is a spatial-resolution limitation, not repeated ground-truth labels.",
+  "checks": [
+    {
+      "name": "empty: exact 70/30 rounded counts",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty: source rows, ids and truth retained",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty: inner fit/validation partition only the 70%",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty: source coordinates match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished: exact 70/30 rounded counts",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished: source rows, ids and truth retained",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished: inner fit/validation partition only the 70%",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished: source coordinates match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "outer: no cross-version coordinate group overlap",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "inner: no cross-version coordinate group overlap",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "saved partition reproducible",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source SHA256: data.xlsx",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source SHA256: 放家具数据.xlsx",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "five-grade inclusive boundary semantics",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "predictions CSV contains all 189 points x 2 tasks x 5 methods",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "predictions CSV has no repeated scenario/task/model/id",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/ae: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/ae: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/completion/ae: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/ae: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/ae: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/ae: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/completion/ae: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/ae: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/ae: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/completion/unet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/completion/unet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/resunet: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/resunet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/completion/resunet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/resunet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/resunet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/resunet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/completion/resunet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/resunet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/resunet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/unet_scatter: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet_scatter: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/completion/unet_scatter: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet_scatter: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet_scatter: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet_scatter: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/completion/unet_scatter: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet_scatter: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet_scatter: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion/pgmpr: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/pgmpr: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/completion/pgmpr: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/pgmpr: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/pgmpr: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/pgmpr: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/completion/pgmpr: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/pgmpr: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/pgmpr: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/ae: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/ae: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/layout/ae: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/ae: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/ae: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/ae: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/layout/ae: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/ae: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/ae: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/layout/unet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/layout/unet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/resunet: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/resunet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/layout/resunet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/resunet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/resunet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/resunet: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/layout/resunet: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/resunet: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/resunet: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/unet_scatter: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet_scatter: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/layout/unet_scatter: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet_scatter: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet_scatter: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet_scatter: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/layout/unet_scatter: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet_scatter: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet_scatter: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr/refit70: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr/refit70: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr/refit70: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr/selection: normalizer uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr/selection: physics uses allowed training only",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr/selection: stored training/validation ids match split",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr: refit epochs chosen by inner validation",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout/pgmpr: model hash matches metadata",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/pgmpr: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "empty/layout/pgmpr: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/pgmpr: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/pgmpr: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/pgmpr: saved model reproduces point predictions",
+      "passed": true,
+      "details": 0.0
+    },
+    {
+      "name": "furnished/layout/pgmpr: saved grid matches restored model",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/pgmpr: metrics independently recomputed",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/pgmpr: CSV and report values agree",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "test-label tampering cannot alter fitted physics",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/ae: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/ae: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/ae: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/unet: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/resunet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/resunet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/resunet: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/unet_scatter: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/unet_scatter: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/unet_scatter: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/completion/pgmpr: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/layout/pgmpr: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty/pgmpr: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/ae: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/ae: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/ae: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/unet: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/resunet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/resunet: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/resunet: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/unet_scatter: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/unet_scatter: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/unet_scatter: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/completion/pgmpr: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/layout/pgmpr: sealed-label tampering cannot alter input",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "furnished/pgmpr: layout RSSI/mask channels empty",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "completion: test-label tampering leaves actual training weights identical",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "layout: test-label tampering leaves actual training weights identical",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "JS/Python empty: nine geometry channels agree",
+      "passed": true,
+      "details": {
+        "max_delta": 0.0,
+        "differences": []
+      }
+    },
+    {
+      "name": "JS/Python empty: deployed network forward agrees",
+      "passed": true,
+      "details": 1.1444091796875e-05
+    },
+    {
+      "name": "JS/Python furnished: nine geometry channels agree",
+      "passed": true,
+      "details": {
+        "max_delta": 0.0,
+        "differences": []
+      }
+    },
+    {
+      "name": "JS/Python furnished: deployed network forward agrees",
+      "passed": true,
+      "details": 1.1444091796875e-05
+    },
+    {
+      "name": "JS/Python boundary: nine geometry channels agree",
+      "passed": true,
+      "details": {
+        "max_delta": 0.0,
+        "differences": []
+      }
+    },
+    {
+      "name": "JS/Python boundary: deployed network forward agrees",
+      "passed": true,
+      "details": 1.52587890625e-05
+    },
+    {
+      "name": "JS/Python moved_ap: nine geometry channels agree",
+      "passed": true,
+      "details": {
+        "max_delta": 0.0,
+        "differences": []
+      }
+    },
+    {
+      "name": "JS/Python moved_ap: deployed network forward agrees",
+      "passed": true,
+      "details": 1.1444091796875e-05
+    }
+  ]
+}

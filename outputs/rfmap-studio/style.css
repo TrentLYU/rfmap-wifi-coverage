@@ -118,7 +118,7 @@ body {
   border-radius: 6px;
   font-size: 12px;
   line-height: 1.5;
-  white-space: nowrap;
+  white-space: pre-line;
   font-variant-numeric: tabular-nums;
 }
 
@@ -178,7 +178,21 @@ input[type="number"] {
 }
 
 input[type="number"]:focus,
-input[type="range"]:focus { outline: 2px solid var(--accent-soft); }
+input[type="range"]:focus,
+select:focus { outline: 2px solid var(--accent-soft); }
+
+select {
+  flex: 1 1 110px;
+  min-width: 100px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+}
+
+.btn:disabled { opacity: .55; cursor: wait; }
 
 input[type="range"] {
   width: 100%;

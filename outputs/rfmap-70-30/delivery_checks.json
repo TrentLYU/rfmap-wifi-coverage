@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-06",
+  "report_local_links": "passed",
+  "studio_browser_checked": true,
+  "observed_add_toilet_and_predict": {
+    "valid_nodes": 1020,
+    "ui_duration_ms": 32
+  },
+  "report_visual_checked": true,
+  "split_figure_visual_checked": true,
+  "hardware_checks": "not rerun; no device connected",
+  "survey_dry_run_points": 35
+}
