@@ -24,3 +24,18 @@ data/sim_scatter/.cache/
 # ---- 早期中间产物（与 fig_*.png 内容重复） ----
 outputs/figures/geometry.png
 outputs/figures/data_profile.png
+
+
+
+# cby47 本地测量、独立比较实验输出与小车构建文件
+/private/
+/experiments/rssi_baselines/optimized/
+/experiments/rssi_baselines/results/
+/hardware/grid_car/**/build/
+*.hex
+*.elf
+*.o
+*.log
+*.tmp
+.env
+.env.*
