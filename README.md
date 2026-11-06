@@ -9,6 +9,14 @@
 
 ---
 
+## 最近进度与团队协作
+
+- [项目进度与贡献记录](PROGRESS.md)
+- [@cby47：Wi-Fi 两批数据比较与小车巡测工程](docs/progress/2026-11-06-cby47.md)
+- [小车工程](hardware/grid_car/) · [独立基线实验](experiments/rssi_baselines/) · [目录整理说明](docs/repository-organization.md)
+
+本次个人实验按“x 向上、y 向左”记录；下文既有 RF Map 主线按“x 向左、y 向上”。两者对接需交换坐标列及路由器坐标，不能直接混用。下面的 CNN 结果仍保持原有评价口径，不与个人实验的交叉验证成绩合并排名。
+
 ## 一句话结论
 
 **方案五（PG-MPR-UNet）是最准的方案**：在 200 个训练中从未见过的随机户型上，
@@ -186,3 +194,4 @@ open outputs/rfmap-studio/index.html
 | `docs/04-Agent-Decision-Record.md` | 决策记录与 bug 记录 |
 | `outputs/实测RSSI数据说明.md` | 49 个实测点的来源与用法 |
 | `outputs/RFMap-Studio-使用说明.md` | 离线网站的使用与已知限制 |
+
