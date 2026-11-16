@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WiFi 覆盖预测工作台</title>
+<style>
+  :root{
+    --bg:#eef1f4; --card:#ffffff; --line:#dde3e9; --ink:#1c2530; --mute:#6b7885;
+    --accent:#2f6f4e; --accent2:#3f8f63; --warn:#b42318;
+    --l5:#2f6f4e; --l4:#8ab17d; --l3:#f2cc8f; --l2:#e07a5f; --l1:#b23a48;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink); font-size:13px; -webkit-font-smoothing:antialiased;
+  }
+  .app{display:flex;flex-direction:column;height:100vh}
+  header{
+    display:flex;align-items:center;gap:14px;padding:10px 18px;
+    background:linear-gradient(96deg,#1f4d38,#2f6f4e 46%,#3f8f63);
+    color:#fff;box-shadow:0 2px 10px rgba(20,40,30,.18);z-index:5;
+  }
+  header h1{font-size:15px;margin:0;font-weight:600;letter-spacing:.4px}
+  header .sub{font-size:11.5px;opacity:.82}
+  header .spacer{flex:1}
+  select,button,input{font-family:inherit;font-size:12px;color:var(--ink)}
+  select,button{border-radius:7px;border:1px solid var(--line);background:#fff;padding:5px 9px;cursor:pointer}
+  button:hover{border-color:var(--accent2)}
+  button.primary{background:#fff;color:#1f4d38;font-weight:600;border:none}
+  button.ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
+  main{flex:1;display:grid;grid-template-columns:268px minmax(420px,1fr) 286px;gap:12px;padding:12px;overflow:hidden}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-y:auto;
+    box-shadow:0 1px 3px rgba(20,40,60,.05)}
+  .panel h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);
+    margin:0 0 8px;font-weight:600}
+  .panel section+section{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+  .row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .row label{flex:0 0 auto;color:var(--mute);font-size:12px}
+  .row input[type=number]{width:66px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;text-align:right}
+  .row input[type=range]{flex:1}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .cat{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .cat button{text-align:left;padding:6px 8px;font-size:11.5px;line-height:1.25;background:#fafbfc}
+  .cat button b{display:block;font-weight:600;font-size:11.5px}
+  .cat button span{color:var(--mute);font-size:10px}
+  .stage{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:10px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(20,40,60,.05);min-width:0}
+  .stage .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:none;border-radius:0;background:#fff;padding:5px 10px;font-size:11.5px}
+  .seg button.on{background:var(--accent);color:#fff}
+  #wrap{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+  canvas{max-width:100%;max-height:100%;border-radius:8px;touch-action:none;cursor:crosshair;
+    box-shadow:0 0 0 1px var(--line)}
+  #tip{position:absolute;pointer-events:none;background:rgba(24,32,40,.92);color:#fff;font-size:11.5px;
+    padding:5px 8px;border-radius:6px;transform:translate(10px,-50%);opacity:0;transition:opacity .12s;white-space:nowrap;z-index:9}
+  .legend{display:flex;flex-direction:column;gap:5px}
+  .legend div{display:flex;align-items:center;gap:8px;font-size:12px}
+  .sw{width:16px;height:10px;border-radius:2px;flex:0 0 auto}
+  .stat{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px dotted #eef0f2}
+  .stat b{font-weight:600}
+  .bar{height:7px;border-radius:4px;background:#eef1f4;overflow:hidden;margin-top:3px}
+  .bar i{display:block;height:100%;background:var(--accent2)}
+  .card{background:#f7f9fa;border:1px solid var(--line);border-radius:9px;padding:9px}
+  .card .big{font-size:21px;font-weight:700;color:var(--accent);line-height:1.15}
+  .card .cap{font-size:11px;color:var(--mute);margin-top:2px;line-height:1.5}
+  .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .kpi .card{padding:8px}
+  .kpi .card .big{font-size:17px}
+  .muted{color:var(--mute);font-size:11px;line-height:1.55}
+  .tag{display:inline-block;padding:1px 6px;border-radius:999px;background:#eef4f0;color:#2f6f4e;font-size:10.5px}
+  .list{display:flex;flex-direction:column;gap:4px;max-height:150px;overflow:auto}
+  .item{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;cursor:pointer;font-size:11.5px}
+  .item:hover{background:#f1f4f6}
+  .item.on{background:#e7f0ea;outline:1px solid #bcd8c7}
+  .item .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item .x{color:var(--mute);cursor:pointer;padding:0 3px}
+  .hint{font-size:11px;color:var(--mute);margin-top:6px;line-height:1.6}
+  footer{font-size:10.5px;color:#8b97a3;text-align:center;padding:0 0 8px}
+  .busy{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.62);font-size:12px;color:#456;border-radius:8px;z-index:8}
+  .busy.on{display:flex}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>WiFi 覆盖预测工作台</h1>
+    <span class="sub">户型 + 家具 + AP → 全屋五级信号热力图</span>
+    <span class="spacer"></span>
+    <select id="model" title="预测模型">
+      <option value="deploy">物理趋势 + 实测残差（推荐）</option>
+      <option value="net">神经网络 · 方案五 PGMPR</option>
+      <option value="physics">纯物理（不接实测）</option>
+    </select>
+    <button class="ghost" id="btnPng">导出 PNG</button>
+    <button class="ghost" id="btnCsv">导出 CSV</button>
+  </header>
+
+  <main>
+    <!-- ---------------------------------------------------------- 左 -->
+    <aside class="panel">
+      <section>
+        <h2>户型</h2>
+        <div class="row"><label>宽 W</label><input type="number" id="roomW" value="13" step="0.5" min="4" max="13.4"><span class="muted">m</span></div>
+        <div class="row"><label>高 H</label><input type="number" id="roomH" value="12" step="0.5" min="4" max="13.4"><span class="muted">m</span></div>
+        <div class="hint">网格 0.28 m × 0.28 m（48×48）。移动端户型直接改数值即可。</div>
+      </section>
+
+      <section>
+        <h2>AP 位置</h2>
+        <div class="row"><label>X</label><input type="number" id="apX" value="9" step="0.1"><label>Y</label><input type="number" id="apY" value="12" step="0.1"></div>
+        <div class="row"><label>功率校正</label><input type="range" id="power" min="-12" max="12" step="0.5" value="0"><span id="powerV" class="muted">0 dB</span></div>
+        <div class="hint">也可以直接拖动地图上的 ★ 调整 AP。</div>
+      </section>
+
+      <section>
+        <h2>添加家具 / 隔断</h2>
+        <div class="cat" id="cat"></div>
+        <div class="hint">点击添加后在地图上拖动摆位；选中项可用右下角手柄拖拽改尺寸。</div>
+      </section>
+
+      <section>
+        <h2>已放置 <span id="fcount" class="muted"></span></h2>
+        <div class="list" id="flist"></div>
+        <div class="grid2" style="margin-top:8px">
+          <button id="btnDemo">载入一套示例</button>
+          <button id="btnClear">全部清空</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>实测校正</h2>
+        <label class="row" style="gap:6px"><input type="checkbox" id="usePts" checked><span>用 29 个标定点做残差校正</span></label>
+        <label class="row" style="gap:6px"><input type="checkbox" id="useTest"><span>把 12 个隐藏测试点也作为输入</span></label>
+        <label class="row" style="gap:6px"><input type="checkbox" id="showPts" checked><span>地图上显示测点</span></label>
+        <div class="hint" id="ptHint"></div>
+        <div class="grid2" style="margin-top:8px">
+          <button id="btnExpr">导出测点 CSV</button>
+          <button id="btnReset">恢复默认</button>
+        </div>
+      </section>
+    </aside>
+
+    <!-- ---------------------------------------------------------- 中 -->
+    <section class="stage">
+      <div class="toolbar">
+        <div class="seg" id="segView">
+          <button data-v="level" class="on">五级分区</button>
+          <button data-v="dbm">dBm 连续</button>
+        </div>
+        <div class="seg" id="segScheme">
+          <button data-v="rel" class="on">相对五级</button>
+          <button data-v="abs">绝对五级</button>
+        </div>
+        <span class="spacer" style="flex:1"></span>
+        <span class="tag" id="badge">物理+残差</span>
+      </div>
+      <div id="wrap">
+        <canvas id="map"></canvas>
+        <div id="tip"></div>
+        <div class="busy" id="busy">计算中…</div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------------- 右 -->
+    <aside class="panel">
+      <section>
+        <h2>图例</h2>
+        <div class="legend" id="legend"></div>
+        <div class="muted" id="legendNote" style="margin-top:7px"></div>
+      </section>
+
+      <section>
+        <h2>本次预测</h2>
+        <div class="kpi">
+          <div class="card"><div class="big" id="sMean">–</div><div class="cap">平均信号 dBm</div></div>
+          <div class="card"><div class="big" id="sWeak">–</div><div class="cap">最弱处 dBm</div></div>
+        </div>
+        <div style="margin-top:9px">
+          <div class="stat"><span>≥ 3 级（一般及以上）面积</span><b id="sGood">–</b></div>
+          <div class="stat"><span>1–2 级（偏弱）面积</span><b id="sBad">–</b></div>
+          <div class="stat"><span>房间面积</span><b id="sArea">–</b></div>
+        </div>
+        <div style="margin-top:8px" id="levelBars"></div>
+      </section>
+
+      <section>
+        <h2>模型准确性（30% 隐藏测点）</h2>
+        <div class="card">
+          <div class="big" id="aRmse">–</div>
+          <div class="cap" id="aCap"></div>
+        </div>
+        <div class="kpi" style="margin-top:8px">
+          <div class="card"><div class="big" id="aLv">–</div><div class="cap">五级完全命中</div></div>
+          <div class="card"><div class="big" id="aPm">–</div><div class="cap">允许 ±1 级</div></div>
+        </div>
+        <div class="card" style="margin-top:8px"><div class="big" id="aBin">–</div><div class="cap">好/差 二分类准确率</div></div>
+        <button id="btnLoo" style="width:100%;margin-top:8px">用当前测点做留一法自检</button>
+        <div class="muted" id="looOut" style="margin-top:6px"></div>
+      </section>
+
+      <section>
+        <h2>说明</h2>
+        <div class="muted">
+          预测 = 物理路径损耗趋势（AP 距离 + 墙体/家具穿透衰减）+ 实测残差插值。
+          家具衰减：柜 5 dB、床 3、沙发 3、冰箱 6、隔断墙 8…
+          无实测点时自动退化为纯物理模型。
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<script id="dataset" type="application/json">/*__DATA__*/</script>
+<script>
+"use strict";
+/* ============================================================================
+ * 0. 数据
+ * ==========================================================================*/
+const D = JSON.parse(document.getElementById('dataset').textContent);
+const N = D.grid.n, CELL = D.grid.cell, DOMAIN = D.grid.domain;
+const PL0 = D.physics.pl0, NEXP = D.physics.n, PWR = D.physics.power, EPS = D.physics.eps;
+const OBS_CAP = D.physics.obsCap;
+const MEAN = D.norm.mean, STDS = D.norm.std;
+const AP_CAL = D.ap;
+const THR_REL = D.thresholds.slice();
+const THR_ABS = D.abs_thresholds.slice();
+const COLORS = ['#b23a48','#e07a5f','#f2cc8f','#8ab17d','#2f6f4e'];   // L1..L5
+const LABELS_REL = ['1 级 · 最弱','2 级 · 较弱','3 级 · 一般','4 级 · 良好','5 级 · 最强'];
+const LABELS_ABS = ['1 级 · 很差','2 级 · 较弱','3 级 · 一般','4 级 · 良好','5 级 · 优秀'];
+
+/* ============================================================================
+ * 1. 状态
+ * ==========================================================================*/
+const state = {
+  roomW: D.room[0], roomH: D.room[1],
+  ap: {x: AP_CAL[0], y: AP_CAL[1]},
+  power: 0,
+  furn: [],
+  usePoints: true,
+  useTest: false,
+  showPoints: true,
+  model: 'deploy',
+  view: 'level',
+  scheme: 'rel',
+  sel: null,
+  field: null,
+  phys: null,
+  pts: D.points.map(p => ({...p})),
+};
+let nextId = 1;
+const CAT_ORDER = ['wall','wardrobe','bed','sofa','chair','desk','toilet','fridge','tv','bath','washer','shelf','plant','door'];
+
+/* ============================================================================
+ * 2. 几何与物理（与 wifi_rf/physics.py 逐元素对应）
+ * ==========================================================================*/
+function center(i){ return (i + 0.5) * CELL; }
+
+function roomMaskArray(){
+  const m = new Float32Array(N*N);
+  for (let iy=0; iy<N; iy++) for (let ix=0; ix<N; ix++){
+    if (center(ix) <= state.roomW && center(iy) <= state.roomH) m[iy*N+ix] = 1;
+  }
+  return m;
+}
+const MASK = roomMaskArray();   // 房间尺寸改变时重建
+
+function segRectHit(ax, ay, px, py, r){
+  const dx = px - ax, dy = py - ay;
+  let tmin = 0, tmax = 1;
+  const clip = (p, q) => {
+    if (Math.abs(p) < 1e-12) return q >= 0;
+    const t = q / p;
+    if (p > 0){ if (t < tmax) tmax = t; } else { if (t > tmin) tmin = t; }
+    return true;
+  };
+  if (!clip(-dx, ax - r.x0)) return 0;
+  if (!clip( dx, r.x1 - ax)) return 0;
+  if (!clip(-dy, ay - r.y0)) return 0;
+  if (!clip( dy, r.y1 - ay)) return 0;
+  return (tmax >= tmin && tmax >= 0 && tmin <= 1) ? 1 : 0;
+}
+
+function physField(ap, obstacles, pl0, nexp){
+  const out = new Float32Array(N*N);
+  const rects = obstacles.map(o => ({x0:o.x-o.w/2, x1:o.x+o.w/2, y0:o.y-o.h/2, y1:o.y+o.h/2, db:o.db}));
+  for (let iy=0; iy<N; iy++){
+    const cy = center(iy);
+    for (let ix=0; ix<N; ix++){
+      const cx = center(ix);
+      const d = Math.max(Math.hypot(cx-ap.x, cy-ap.y), 1.0);
+      let pl = pl0 + 10*nexp*Math.log10(d);
+      for (let k=0; k<rects.length; k++){
+        const r = rects[k];
+        if (segRectHit(ap.x, ap.y, cx, cy, r)) pl += r.db;
+      }
+      out[iy*N+ix] = -pl;
+    }
+  }
+  return out;
+}
+
+/** 双线性采样（与 realdata.sample_bilinear 一致）
+ *  房外格点被填成 -120 的无效哨兵值，直接参与插值会把贴墙的 AP 附近
+ *  拉低（读数 -65 但图上深绿）。含哨兵值时只在有效角点上按权重归一化。 */
+function sampleBilinear(f, x, y){
+  const fx = Math.min(Math.max(x/CELL - 0.5, 0), N-1.001);
+  const fy = Math.min(Math.max(y/CELL - 0.5, 0), N-1.001);
+  const x0 = Math.floor(fx), y0 = Math.floor(fy);
+  const x1 = Math.min(x0+1, N-1), y1 = Math.min(y0+1, N-1);
+  const tx = fx-x0, ty = fy-y0;
+  const i00 = y0*N+x0, i10 = y0*N+x1, i01 = y1*N+x0, i11 = y1*N+x1;
+  const v00 = f[i00], v10 = f[i10], v01 = f[i01], v11 = f[i11];
+  const w00 = (1-tx)*(1-ty), w10 = tx*(1-ty), w01 = (1-tx)*ty, w11 = tx*ty;
+  if (v00 > -119 && v10 > -119 && v01 > -119 && v11 > -119){
+    return v00*w00 + v10*w10 + v01*w01 + v11*w11;
+  }
+  let num = 0, den = 0;
+  if (v00 > -119){ num += v00*w00; den += w00; }
+  if (v10 > -119){ num += v10*w10; den += w10; }
+  if (v01 > -119){ num += v01*w01; den += w01; }
+  if (v11 > -119){ num += v11*w11; den += w11; }
+  return den > 1e-9 ? num/den : -120;
+}
+
+/** IDW 残差场：r_i = rssi_i − PL_cal(x_i)，再对 r 做反距离加权 */
+function residField(pts, cal){
+  if (!pts.length) return null;
+  const r = pts.map(p => p.rssi - sampleBilinear(cal, p.x, p.y));
+  const out = new Float32Array(N*N);
+  for (let iy=0; iy<N; iy++){
+    const cy = center(iy);
+    for (let ix=0; ix<N; ix++){
+      const cx = center(ix);
+      let num = 0, den = 0;
+      for (let k=0; k<pts.length; k++){
+        const d = Math.max(Math.hypot(cx-pts[k].x, cy-pts[k].y), EPS);
+        const w = 1/Math.pow(d, PWR);
+        num += w*r[k]; den += w;
+      }
+      out[iy*N+ix] = num/den;
+    }
+  }
+  return out;
+}
+
+/* ============================================================================
+ * 3. 神经网络前向（方案五 PGMPR，7 通道 U-Net 残差）
+ * ==========================================================================*/
+const WEIGHTS = {};
+let netReady = false;
+
+function f16ToF32(h){
+  const s = (h & 0x8000) >> 15, e = (h & 0x7C00) >> 10, f = h & 0x03FF;
+  if (e === 0) return (s ? -1 : 1) * Math.pow(2, -14) * (f/1024);
+  if (e === 0x1F) return f ? NaN : (s ? -Infinity : Infinity);
+  return (s ? -1 : 1) * Math.pow(2, e-15) * (1 + f/1024);
+}
+
+function loadWeights(){
+  for (const k in D.weights){
+    const item = D.weights[k];
+    const bin = atob(item.b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i=0; i<bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const hv = new Uint16Array(bytes.buffer, bytes.byteOffset, bytes.length/2);
+    const out = new Float32Array(hv.length);
+    for (let i=0; i<hv.length; i++) out[i] = f16ToF32(hv[i]);
+    WEIGHTS[k] = out;
+  }
+  netReady = true;
+}
+
+function conv3x3(inp, cin, cout, H, W, wt, bs){
+  const HW = H*W, out = new Float32Array(cout*HW);
+  for (let oc=0; oc<cout; oc++){
+    const oOff = oc*HW, b = bs[oc];
+    for (let i=0; i<HW; i++) out[oOff+i] = b;
+    for (let ic=0; ic<cin; ic++){
+      const iOff = ic*HW, wOff = (oc*cin+ic)*9;
+      for (let ky=0; ky<3; ky++) for (let kx=0; kx<3; kx++){
+        const wv = wt[wOff+ky*3+kx];
+        if (wv === 0) continue;
+        const sy0 = ky-1, sx0 = kx-1;
+        for (let y=0; y<H; y++){
+          const sy = y+sy0; if (sy < 0 || sy >= H) continue;
+          const orow = oOff + y*W, srow = iOff + sy*W;
+          for (let x=0; x<W; x++){
+            const sx = x+sx0; if (sx < 0 || sx >= W) continue;
+            out[orow+x] += wv * inp[srow+sx];
+          }
+        }
+      }
+    }
+  }
+  return out;
+}
+
+function relu(a){ for (let i=0; i<a.length; i++) if (a[i] < 0) a[i] = 0; return a; }
+
+function block(inp, cin, cout, H, W, pre){
+  const h = relu(conv3x3(inp, cin, cout, H, W, WEIGHTS[pre+'.0.weight'], WEIGHTS[pre+'.0.bias']));
+  return relu(conv3x3(h, cout, cout, H, W, WEIGHTS[pre+'.2.weight'], WEIGHTS[pre+'.2.bias']));
+}
+
+function maxpool(inp, C, H, W){
+  const OH = H>>1, OW = W>>1, HW = H*W, OHW = OH*OW;
+  const out = new Float32Array(C*OHW);
+  for (let c=0; c<C; c++){
+    const io = c*HW, oo = c*OHW;
+    for (let y=0; y<OH; y++) for (let x=0; x<OW; x++){
+      const a = inp[io + (2*y)*W + 2*x], b = inp[io + (2*y)*W + 2*x+1];
+      const d = inp[io + (2*y+1)*W + 2*x], e = inp[io + (2*y+1)*W + 2*x+1];
+      out[oo + y*OW + x] = Math.max(a, b, d, e);
+    }
+  }
+  return out;
+}
+
+function convT2(inp, cin, cout, H, W, wt, bs){
+  const OH = H*2, OW = W*2, OHW = OH*OW;
+  const out = new Float32Array(cout*OHW);
+  for (let oc=0; oc<cout; oc++){ const o = oc*OHW; for (let i=0; i<OHW; i++) out[o+i] = bs[oc]; }
+  for (let ic=0; ic<cin; ic++){
+    const iOff = ic*H*W;
+    for (let y=0; y<H; y++) for (let x=0; x<W; x++){
+      const v = inp[iOff + y*W + x];
+      if (v === 0) continue;
+      for (let oc=0; oc<cout; oc++){
+        const wOff = (ic*cout+oc)*4, o = oc*OHW + (2*y)*OW + 2*x;
+        out[o]           += v*wt[wOff];
+        out[o+1]         += v*wt[wOff+1];
+        out[o+OW]        += v*wt[wOff+2];
+        out[o+OW+1]      += v*wt[wOff+3];
+      }
+    }
+  }
+  return out;
+}
+
+function concat(a, ca, b, cb, HW){
+  const out = new Float32Array((ca+cb)*HW);
+  out.set(a, 0); out.set(b, ca*HW);
+  return out;
+}
+
+/** 7 通道输入（与 physics.build_inputs 一致） */
+function buildChannels(pts, phys){
+  const HW = N*N;
+  const ch = new Float32Array(7*HW);
+  const om = new Float32Array(HW);
+  for (const p of pts){
+    const ix = Math.min(Math.max(Math.floor(p.x/CELL), 0), N-1);
+    const iy = Math.min(Math.max(Math.floor(p.y/CELL), 0), N-1);
+    om[iy*N+ix] = 1;
+    ch[iy*N+ix] = (p.rssi - MEAN) / STDS;          // ch0
+  }
+  ch.set(om, HW);                                   // ch1
+  for (let i=0; i<HW; i++) ch[2*HW+i] = MASK[i];    // ch2
+  for (let i=0; i<HW; i++) ch[3*HW+i] = MASK[i] > 0 ? (phys[i]-MEAN)/STDS : 0;  // ch3
+
+  // ch4 距离最近的观测点
+  if (pts.length){
+    for (let iy=0; iy<N; iy++) for (let ix=0; ix<N; ix++){
+      let best = Infinity;
+      for (let k=0; k<pts.length; k++){
+        const d = Math.hypot(center(ix)-pts[k].x, center(iy)-pts[k].y);
+        if (d < best) best = d;
+      }
+      ch[4*HW + iy*N+ix] = Math.min(Math.max(best/OBS_CAP, 0), 1);
+    }
+  } else {
+    for (let i=0; i<HW; i++) ch[4*HW+i] = 1;
+  }
+
+  // ch5 观测密度
+  const dens = obsDensity(om);
+  for (let i=0; i<HW; i++) ch[5*HW+i] = dens[i];
+
+  // ch6 IDW 先验（房间外填 0，与 physics.build_inputs 一致）
+  if (pts.length){
+    for (let iy=0; iy<N; iy++) for (let ix=0; ix<N; ix++){
+      const i = iy*N+ix;
+      if (MASK[i] <= 0) continue;
+      let num=0, den=0;
+      for (let k=0; k<pts.length; k++){
+        const d = Math.max(Math.hypot(center(ix)-pts[k].x, center(iy)-pts[k].y), EPS);
+        const w = 1/Math.pow(d, PWR);
+        num += w*pts[k].rssi; den += w;
+      }
+      ch[6*HW + i] = (num/den - MEAN)/STDS;
+    }
+  }
+  return ch;
+}
+
+function reflectIdx(i, n){
+  while (i < 0 || i >= n){
+    if (i < 0) i = -i; else i = 2*n - 2 - i;
+  }
+  return i;
+}
+
+function obsDensity(om){
+  const sigma = 2.0, r = Math.max(1, Math.round(3*sigma));
+  const k = new Float64Array(2*r+1);
+  let s = 0;
+  for (let i=-r; i<=r; i++){ k[i+r] = Math.exp(-0.5*Math.pow(i/sigma,2)); s += k[i+r]; }
+  for (let i=0; i<k.length; i++) k[i] /= s;
+  const tmp = new Float32Array(N*N), out = new Float32Array(N*N);
+  for (let y=0; y<N; y++) for (let x=0; x<N; x++){
+    let acc = 0;
+    for (let i=-r; i<=r; i++) acc += k[i+r]*om[y*N + reflectIdx(x+i, N)];
+    tmp[y*N+x] = acc;
+  }
+  for (let y=0; y<N; y++) for (let x=0; x<N; x++){
+    let acc = 0;
+    for (let i=-r; i<=r; i++) acc += k[i+r]*tmp[reflectIdx(y+i, N)*N + x];
+    out[y*N+x] = acc;
+  }
+  let mx = 0;
+  for (let i=0; i<out.length; i++) if (out[i] > mx) mx = out[i];
+  if (mx > 1e-6) for (let i=0; i<out.length; i++) out[i] /= mx;
+  return out;
+}
+
+function netForward(ch){
+  const H = N, W = N, B = 12;
+  const e1 = block(ch, 7, B, H, W, 'e1');
+  const e2 = block(maxpool(e1, B, H, W), B, 2*B, H/2, W/2, 'e2');
+  const e3 = block(maxpool(e2, 2*B, H/2, W/2), 2*B, 4*B, H/4, W/4, 'e3');
+  const bt = block(maxpool(e3, 4*B, H/4, W/4), 4*B, 8*B, H/8, W/8, 'bott');
+
+  let u = convT2(bt, 8*B, 4*B, H/8, W/8, WEIGHTS['u3.weight'], WEIGHTS['u3.bias']);
+  let d = block(concat(u, 4*B, e3, 4*B, (H/4)*(W/4)), 8*B, 4*B, H/4, W/4, 'd3');
+  u = convT2(d, 4*B, 2*B, H/4, W/4, WEIGHTS['u2.weight'], WEIGHTS['u2.bias']);
+  d = block(concat(u, 2*B, e2, 2*B, (H/2)*(W/2)), 4*B, 2*B, H/2, W/2, 'd2');
+  u = convT2(d, 2*B, B, H/2, W/2, WEIGHTS['u1.weight'], WEIGHTS['u1.bias']);
+  d = block(concat(u, B, e1, B, H*W), 2*B, B, H, W, 'd1');
+
+  const wo = WEIGHTS['out.weight'], bo = WEIGHTS['out.bias'];
+  const res = new Float32Array(H*W);
+  for (let y=0; y<H; y++) for (let x=0; x<W; x++){
+    let acc = bo[0];
+    for (let c=0; c<B; c++) acc += wo[c]*d[c*H*W + y*W + x];
+    res[y*W+x] = acc;
+  }
+  return res;
+}
+
+/* ============================================================================
+ * 4. 预测流水线
+ * ==========================================================================*/
+function activePoints(){
+  if (!state.usePoints) return [];
+  // 默认只用 29 个标定点：12 个隐藏测试点不能既当输入又当评分依据
+  return state.useTest ? state.pts : state.pts.filter(p => !p.test);
+}
+
+function computeField(){
+  const pts = activePoints();
+  const obstacles = state.furn.filter(f => f.db > 0);
+  const phys = physField(state.ap, obstacles, PL0, NEXP);
+  const HW = N*N;
+  let field;
+  if (state.model === 'physics' || pts.length === 0){
+    field = new Float32Array(HW);
+    for (let i=0; i<HW; i++) field[i] = MASK[i] > 0 ? phys[i] : -120;
+  } else if (state.model === 'net'){
+    const cal = physField({x: state.ap.x, y: state.ap.y}, obstacles, PL0, NEXP);
+    const ch = buildChannels(pts, cal);
+    const res = netForward(ch);
+    field = new Float32Array(HW);
+    for (let i=0; i<HW; i++){
+      if (MASK[i] <= 0){ field[i] = -120; continue; }
+      const v = (res[i] + ch[6*HW + i]) * STDS + MEAN;   // 残差 + 先验
+      field[i] = v;
+    }
+  } else {
+    const cal = physField({x: AP_CAL[0], y: AP_CAL[1]}, [], PL0, NEXP);
+    const res = residField(pts, cal);
+    field = new Float32Array(HW);
+    for (let i=0; i<HW; i++) field[i] = MASK[i] > 0 ? phys[i] + res[i] : -120;
+  }
+  if (state.power){
+    for (let i=0; i<HW; i++) if (field[i] > -119) field[i] += state.power;
+  }
+  state.phys = phys;
+  state.field = field;
+}
+
+function thresholds(){
+  if (state.scheme === 'abs') return THR_ABS;
+  if (!state.usePoints || !state.pts.length) return THR_REL;
+  // 五级门槛只由"标定集"（非隐藏测试点）决定，避免测试信息泄漏
+  const cal = state.pts.filter(p => !p.test);
+  const base = cal.length >= 5 ? cal : state.pts;
+  return quintiles(base.map(p => p.rssi));
+}
+
+function quintiles(vals){
+  const a = vals.slice().sort((x,y) => x-y);
+  const pick = q => {
+    const pos = (a.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos);
+    return a[lo] + (a[hi]-a[lo]) * (pos-lo);
+  };
+  return [pick(0.2), pick(0.4), pick(0.6), pick(0.8)];
+}
+
+function levelOf(v, th){
+  let l = 1;
+  for (let i=0; i<th.length; i++) if (v > th[i]) l++;
+  return l;
+}
+
+/* ============================================================================
+ * 5. 绘制
+ * ==========================================================================*/
+const canvas = document.getElementById('map');
+const ctx = canvas.getContext('2d');
+const off = document.createElement('canvas');
+off.width = 480; off.height = 480;
+const octx = off.getContext('2d');
+
+function hexToRgb(h){ return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
+const RGB = COLORS.map(hexToRgb);
+
+function lerpColor(v, lo, hi){
+  let t = (v-lo)/(hi-lo);
+  t = Math.min(Math.max(t, 0), 1);
+  const s = t*4, i = Math.min(Math.floor(s), 3), f = s-i;
+  const a = RGB[i], b = RGB[Math.min(i+1,4)];
+  return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
+}
+
+function drawFieldLayer(){
+  const W = off.width, H = off.height, img = octx.createImageData(W, H);
+  const th = thresholds();
+  const mode = state.view, scheme = state.scheme;
+  let lo = Infinity, hi = -Infinity;
+  if (mode === 'dbm'){
+    for (let i=0; i<N*N; i++) if (state.field[i] > -119){
+      if (state.field[i] < lo) lo = state.field[i];
+      if (state.field[i] > hi) hi = state.field[i];
+    }
+    if (!isFinite(lo)){ lo = -50; hi = -30; }
+    if (hi - lo < 1) hi = lo + 1;
+  }
+  const scale = DOMAIN / W;
+  for (let py=0; py<H; py++){
+    // canvas 行 0 在顶部，对应 y = DOMAIN；否则场图会与测点/家具/AP 上下颠倒
+    const my = DOMAIN - (py + 0.5) * scale;
+    for (let px=0; px<W; px++){
+      const mx = (px + 0.5) * scale;
+      const v = sampleBilinear(state.field, mx, my);
+      const idx = (py*W + px)*4;
+      if (v <= -119){ img.data[idx+3] = 0; continue; }
+      let c;
+      if (mode === 'level'){
+        c = RGB[levelOf(v, th) - 1];
+      } else {
+        c = lerpColor(v, lo, hi);
+      }
+      img.data[idx] = c[0]; img.data[idx+1] = c[1]; img.data[idx+2] = c[2]; img.data[idx+3] = 255;
+    }
+  }
+  octx.putImageData(img, 0, 0);
+  if (typeof __ON_FRAME === 'function') __ON_FRAME(img, W, H);
+
+  const dpr = window.devicePixelRatio || 1;
+  const size = Math.min(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight) - 6;
+  canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+  canvas.width = Math.round(size*dpr); canvas.height = Math.round(size*dpr);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.imageSmoothingEnabled = true;
+  const S = canvas.width / DOMAIN;
+  ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
+
+  // 房间轮廓
+  ctx.strokeStyle = '#8a8a8a'; ctx.lineWidth = 1.2*dpr;
+  ctx.strokeRect(0, canvas.height - state.roomH*S, state.roomW*S, state.roomH*S);
+
+  // 家具
+  for (const f of state.furn){
+    const x = f.x*S, y = canvas.height - (f.y + f.h/2)*S;
+    const w = f.w*S, h = f.h*S;
+    ctx.fillStyle = f.kind === 'wall' ? 'rgba(70,80,95,.55)' : 'rgba(74,94,120,.34)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = f.kind === 'wall' ? '#3c4654' : '#4a5e78';
+    ctx.lineWidth = 1*dpr;
+    ctx.strokeRect(x, y, w, h);
+    if (Math.min(w, h) > 16*dpr){
+      ctx.fillStyle = 'rgba(255,255,255,.92)';
+      ctx.font = `${Math.max(9, Math.min(11, Math.min(w,h)/(2.2*dpr)))*dpr}px "Microsoft YaHei"`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(f.short, x + w/2, y + h/2);
+    }
+    if (state.sel === f.id){
+      ctx.strokeStyle = '#1f4d38'; ctx.lineWidth = 2*dpr; ctx.setLineDash([5*dpr, 3*dpr]);
+      ctx.strokeRect(x, y, w, h); ctx.setLineDash([]);
+      ctx.fillStyle = '#1f4d38';
+      ctx.fillRect(x + w - 5*dpr, y + h - 5*dpr, 10*dpr, 10*dpr);
+    }
+  }
+
+  // 测点
+  if (state.showPoints && state.pts.length){
+    for (const p of state.pts){
+      const x = p.x*S, y = canvas.height - p.y*S;
+      ctx.beginPath();
+      ctx.arc(x, y, (p.test ? 4.4 : 3.4)*dpr, 0, Math.PI*2);
+      ctx.fillStyle = p.test ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.95)';
+      ctx.fill();
+      ctx.lineWidth = (p.test ? 1.6 : 1.0)*dpr;
+      ctx.strokeStyle = p.test ? '#c62828' : '#33404d';
+      ctx.stroke();
+    }
+  }
+
+  // AP
+  const ax = state.ap.x*S, ay = canvas.height - state.ap.y*S;
+  ctx.beginPath(); ctx.arc(ax, ay, 9*dpr, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fill();
+  ctx.fillStyle = '#f6b400'; ctx.strokeStyle = '#7a5200'; ctx.lineWidth = 1*dpr;
+  ctx.font = `${16*dpr}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('★', ax, ay);
+  ctx.fillStyle = '#5a3f00';
+  ctx.font = `600 ${9.5*dpr}px "Microsoft YaHei"`;
+  ctx.fillText('AP', ax, ay + 14*dpr);
+}
+
+/* ============================================================================
+ * 6. 面板
+ * ==========================================================================*/
+function renderLegend(){
+  const th = thresholds();
+  const labels = state.scheme === 'abs' ? LABELS_ABS : LABELS_REL;
+  const el = document.getElementById('legend');
+  let html = '';
+  for (let l=5; l>=1; l--){
+    let range = '';
+    if (state.view === 'level'){
+      if (l === 5) range = `> ${th[3].toFixed(1)} dBm`;
+      else if (l === 1) range = `≤ ${th[0].toFixed(1)} dBm`;
+      else range = `${th[l-2].toFixed(1)} ~ ${th[l-1].toFixed(1)} dBm`;
+    }
+    html += `<div><span class="sw" style="background:${COLORS[l-1]}"></span>
+      <span style="flex:1">${labels[l-1]}</span>
+      <span class="muted">${range}</span></div>`;
+  }
+  el.innerHTML = html;
+  const note = state.scheme === 'abs'
+    ? '绝对五级按通用 Wi-Fi 质量门槛：−50 / −60 / −70 / −80 dBm。'
+    : `相对五级按当前测点 20/40/60/80 分位切分（${th.map(v=>v.toFixed(1)).join(' / ')} dBm）。本户型动态范围仅 ${(D.points.reduce((a,b)=>Math.max(a,b.rssi),-99) - D.points.reduce((a,b)=>Math.min(a,b.rssi),-99)).toFixed(0)} dB，所以相对分档更有区分度。`;
+  document.getElementById('legendNote').textContent = note;
+}
+
+function renderStats(){
+  const th = thresholds();
+  const counts = [0,0,0,0,0];
+  let sum = 0, n = 0, min = Infinity;
+  for (let i=0; i<N*N; i++){
+    if (MASK[i] <= 0) continue;
+    const v = state.field[i];
+    sum += v; n++;
+    if (v < min) min = v;
+    const lv = levelOf(v, th);
+    counts[lv-1]++;
+  }
+  const areaCell = CELL*CELL;
+  const good = (counts[2]+counts[3]+counts[4])*areaCell;
+  const bad = (counts[0]+counts[1])*areaCell;
+  const total = n*areaCell;
+  document.getElementById('sMean').textContent = n ? (sum/n).toFixed(1) : '–';
+  document.getElementById('sWeak').textContent = n ? min.toFixed(1) : '–';
+  document.getElementById('sGood').textContent = `${good.toFixed(1)} m² · ${(good/total*100).toFixed(0)}%`;
+  document.getElementById('sBad').textContent = `${bad.toFixed(1)} m² · ${(bad/total*100).toFixed(0)}%`;
+  document.getElementById('sArea').textContent = `${total.toFixed(1)} m²`;
+
+  const labels = state.scheme === 'abs' ? LABELS_ABS : LABELS_REL;
+  let html = '';
+  for (let l=5; l>=1; l--){
+    const pct = total > 0 ? counts[l-1]*areaCell/total*100 : 0;
+    html += `<div style="margin-bottom:6px">
+      <div class="stat" style="border:none;padding:0"><span>${labels[l-1]}</span>
+      <b>${pct.toFixed(0)}%</b></div>
+      <div class="bar"><i style="width:${pct}%;background:${COLORS[l-1]}"></i></div></div>`;
+  }
+  document.getElementById('levelBars').innerHTML = html;
+}
+
+function renderScorecard(){
+  const key = state.model === 'net' ? 'pgmpr' : 'deploy';
+  const sc = D.scorecard[key];
+  const leak = state.useTest && state.usePoints;
+  document.getElementById('aRmse').textContent = sc.rmse.toFixed(2) + ' dB';
+  document.getElementById('aCap').textContent = leak
+    ? '注意：12 个测试点已被当作输入，此时它们不再是独立检验集，下面的分数仅供对照。'
+    : `12 个从未参与训练的测试点上的均方根误差（模型：${key === 'deploy' ? '物理+实测残差' : '方案五 PGMPR'}）`;
+  document.getElementById('aLv').textContent = (sc.level_acc*100).toFixed(0) + '%';
+  document.getElementById('aPm').textContent = (sc.level_acc_pm1*100).toFixed(0) + '%';
+  document.getElementById('aBin').textContent = (sc.binary_acc*100).toFixed(0) + '%';
+  document.getElementById('badge').textContent =
+    state.model === 'deploy' ? '物理+残差' : (state.model === 'net' ? '方案五 神经网络' : '纯物理');
+}
+
+function renderList(){
+  const el = document.getElementById('flist');
+  document.getElementById('fcount').textContent = state.furn.length ? `(${state.furn.length})` : '';
+  if (!state.furn.length){
+    el.innerHTML = '<div class="muted">还没有家具。上面的按钮可以添加。</div>';
+    return;
+  }
+  el.innerHTML = state.furn.map(f =>
+    `<div class="item ${state.sel===f.id?'on':''}" data-id="${f.id}">
+       <span class="n">${f.label} · ${f.w.toFixed(1)}×${f.h.toFixed(1)} m · ${f.db} dB</span>
+       <span class="x" data-del="${f.id}">✕</span></div>`).join('');
+}
+
+function renderAll(){
+  drawFieldLayer();
+  renderLegend();
+  renderStats();
+  renderScorecard();
+  renderList();
+}
+
+/* ============================================================================
+ * 7. 交互
+ * ==========================================================================*/
+function toMeters(ev){
+  const r = canvas.getBoundingClientRect();
+  const x = (ev.clientX - r.left) / r.width * DOMAIN;
+  const y = (1 - (ev.clientY - r.top) / r.height) * DOMAIN;
+  return {x, y};
+}
+
+let drag = null;
+
+canvas.addEventListener('pointerdown', ev => {
+  const p = toMeters(ev);
+  canvas.setPointerCapture(ev.pointerId);
+  // AP
+  if (Math.hypot(p.x - state.ap.x, p.y - state.ap.y) < 0.5){
+    drag = {kind: 'ap'}; return;
+  }
+  // 选中项的缩放手柄
+  if (state.sel){
+    const f = state.furn.find(v => v.id === state.sel);
+    if (f && Math.hypot(p.x - (f.x + f.w/2), p.y - (f.y + f.h/2)) < 0.35){
+      drag = {kind: 'resize', id: f.id}; return;
+    }
+  }
+  // 家具（后放的在上层）
+  for (let i=state.furn.length-1; i>=0; i--){
+    const f = state.furn[i];
+    if (Math.abs(p.x-f.x) <= f.w/2 && Math.abs(p.y-f.y) <= f.h/2){
+      state.sel = f.id;
+      drag = {kind: 'move', id: f.id, dx: p.x-f.x, dy: p.y-f.y};
+      renderList(); drawFieldLayer(); return;
+    }
+  }
+  state.sel = null; renderList(); drawFieldLayer();
+});
+
+canvas.addEventListener('pointermove', ev => {
+  const p = toMeters(ev);
+  if (drag){
+    if (drag.kind === 'ap'){
+      state.ap.x = Math.min(Math.max(p.x, 0), state.roomW);
+      state.ap.y = Math.min(Math.max(p.y, 0), state.roomH);
+      syncInputs();
+    } else if (drag.kind === 'move'){
+      const f = state.furn.find(v => v.id === drag.id);
+      if (f){
+        f.x = Math.min(Math.max(p.x - drag.dx, f.w/2), state.roomW - f.w/2);
+        f.y = Math.min(Math.max(p.y - drag.dy, f.h/2), state.roomH - f.h/2);
+        syncInputs(); renderList();
+      }
+    } else if (drag.kind === 'resize'){
+      const f = state.furn.find(v => v.id === drag.id);
+      if (f){
+        f.w = Math.min(Math.max(Math.abs(p.x - f.x)*2, 0.3), 6);
+        f.h = Math.min(Math.max(Math.abs(p.y - f.y)*2, 0.15), 6);
+        f.x = Math.min(Math.max(f.x, f.w/2), state.roomW - f.w/2);
+        f.y = Math.min(Math.max(f.y, f.h/2), state.roomH - f.h/2);
+        renderList();
+      }
+    }
+    scheduleCompute();
+  }
+  // tooltip
+  const tip = document.getElementById('tip');
+  if (p.x >= 0 && p.y >= 0 && p.x <= DOMAIN && p.y <= DOMAIN && state.field){
+    const v = sampleBilinear(state.field, p.x, p.y);
+    if (v > -119){
+      const th = thresholds();
+      const lv = levelOf(v, th);
+      const labels = state.scheme === 'abs' ? LABELS_ABS : LABELS_REL;
+      tip.innerHTML = `x ${p.x.toFixed(1)} m · y ${p.y.toFixed(1)} m<br>
+        <b>${v.toFixed(1)} dBm</b> · ${labels[lv-1]}`;
+      tip.style.left = (ev.clientX - canvas.getBoundingClientRect().left) + 'px';
+      tip.style.top = (ev.clientY - canvas.getBoundingClientRect().top) + 'px';
+      tip.style.opacity = 1;
+    } else tip.style.opacity = 0;
+  }
+});
+
+canvas.addEventListener('pointerup', () => { drag = null; });
+canvas.addEventListener('pointerleave', () => {
+  document.getElementById('tip').style.opacity = 0;
+});
+
+let pending = false, busyTimer = null;
+function scheduleCompute(){
+  if (pending) return;
+  pending = true;
+  requestAnimationFrame(() => {
+    pending = false;
+    computeField();
+    drawFieldLayer();
+    renderStats();
+  });
+}
+
+function recomputeNow(){
+  computeField();
+  renderAll();
+}
+
+/* ---------------------------------------------------------------- 控件 */
+function syncInputs(){
+  document.getElementById('apX').value = state.ap.x.toFixed(1);
+  document.getElementById('apY').value = state.ap.y.toFixed(1);
+  document.getElementById('powerV').textContent = (state.power > 0 ? '+' : '') + state.power + ' dB';
+}
+
+document.getElementById('apX').addEventListener('input', e => {
+  state.ap.x = Math.min(Math.max(+e.target.value || 0, 0), state.roomW); scheduleCompute();
+});
+document.getElementById('apY').addEventListener('input', e => {
+  state.ap.y = Math.min(Math.max(+e.target.value || 0, 0), state.roomH); scheduleCompute();
+});
+document.getElementById('power').addEventListener('input', e => {
+  state.power = +e.target.value; syncInputs(); scheduleCompute();
+});
+document.getElementById('roomW').addEventListener('input', e => {
+  state.roomW = Math.min(Math.max(+e.target.value || 13, 4), DOMAIN);
+  rebuildMask(); recomputeNow();
+});
+document.getElementById('roomH').addEventListener('input', e => {
+  state.roomH = Math.min(Math.max(+e.target.value || 12, 4), DOMAIN);
+  rebuildMask(); recomputeNow();
+});
+function rebuildMask(){
+  for (let iy=0; iy<N; iy++) for (let ix=0; ix<N; ix++)
+    MASK[iy*N+ix] = (center(ix) <= state.roomW && center(iy) <= state.roomH) ? 1 : 0;
+  for (const f of state.furn){
+    f.x = Math.min(Math.max(f.x, f.w/2), state.roomW - f.w/2);
+    f.y = Math.min(Math.max(f.y, f.h/2), state.roomH - f.h/2);
+  }
+  renderList();
+}
+
+document.getElementById('model').addEventListener('change', e => {
+  state.model = e.target.value;
+  const busy = document.getElementById('busy');
+  if (state.model === 'net' && state.usePoints && state.pts.length === 0){
+    document.getElementById('ptHint').textContent = '方案五需要至少 6 个测点作为输入。';
+  }
+  busy.classList.add('on');
+  setTimeout(() => { computeField(); renderAll(); busy.classList.remove('on'); }, 20);
+});
+
+document.getElementById('usePts').addEventListener('change', e => {
+  state.usePoints = e.target.checked; recomputeNow();
+});
+document.getElementById('useTest').addEventListener('change', e => {
+  state.useTest = e.target.checked; recomputeNow();
+});
+document.getElementById('showPts').addEventListener('change', e => {
+  state.showPoints = e.target.checked; drawFieldLayer();
+});
+
+document.getElementById('segView').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.children].forEach(c => c.classList.toggle('on', c === b));
+  state.view = b.dataset.v; renderLegend(); renderStats(); drawFieldLayer();
+});
+document.getElementById('segScheme').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.children].forEach(c => c.classList.toggle('on', c === b));
+  state.scheme = b.dataset.v; renderLegend(); renderStats(); drawFieldLayer();
+});
+
+// 家具目录
+const catEl = document.getElementById('cat');
+catEl.innerHTML = CAT_ORDER.map(k => {
+  const f = D.furniture[k];
+  return `<button data-k="${k}"><b>${f.label}</b><span>${f.w}×${f.h} m · ${f.db} dB</span></button>`;
+}).join('');
+catEl.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const k = b.dataset.k, spec = D.furniture[k];
+  const item = {
+    id: nextId++, key: k, label: spec.label, short: spec.label.replace(/[\/].*/, ''),
+    db: spec.db, w: spec.w, h: spec.h, kind: spec.kind,
+    x: Math.min(state.roomW - spec.w/2, Math.max(spec.w/2, state.roomW*0.5)),
+    y: Math.min(state.roomH - spec.h/2, Math.max(spec.h/2, state.roomH*0.5)),
+  };
+  state.furn.push(item); state.sel = item.id;
+  renderList(); recomputeNow();
+});
+
+document.getElementById('flist').addEventListener('click', e => {
+  const del = e.target.dataset.del;
+  if (del){
+    state.furn = state.furn.filter(f => f.id !== +del);
+    if (state.sel === +del) state.sel = null;
+    renderList(); recomputeNow(); return;
+  }
+  const item = e.target.closest('.item');
+  if (item){ state.sel = +item.dataset.id; renderList(); drawFieldLayer(); }
+});
+
+document.getElementById('btnClear').addEventListener('click', () => {
+  state.furn = []; state.sel = null; renderList(); recomputeNow();
+});
+document.getElementById('btnDemo').addEventListener('click', () => {
+  state.furn = [];
+  const add = (k, x, y, w, h) => {
+    const spec = D.furniture[k];
+    state.furn.push({id: nextId++, key: k, label: spec.label, short: spec.label,
+      db: spec.db, w: w || spec.w, h: h || spec.h, kind: spec.kind, x, y});
+  };
+  add('wall', 7.6, 6.2, 0.24, 4.6);
+  add('wall', 7.6, 9.4, 4.6, 0.24);
+  add('bed', 3.3, 9.6, 2.0, 1.8);
+  add('wardrobe', 3.0, 5.6, 1.8, 0.6);
+  add('sofa', 10.6, 5.2, 0.9, 2.0);
+  add('tv', 10.4, 8.4, 1.6, 0.35);
+  add('fridge', 12.2, 10.9, 0.7, 0.7);
+  add('desk', 9.2, 2.4, 1.4, 0.7);
+  add('chair', 9.2, 1.3, 0.5, 0.5);
+  add('toilet', 1.1, 2.0, 0.7, 0.6);
+  state.sel = null;
+  renderList(); recomputeNow();
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  state.roomW = D.room[0]; state.roomH = D.room[1];
+  state.ap = {x: AP_CAL[0], y: AP_CAL[1]}; state.power = 0;
+  state.furn = []; state.sel = null; state.usePoints = true; state.showPoints = true;
+  document.getElementById('roomW').value = state.roomW;
+  document.getElementById('roomH').value = state.roomH;
+  document.getElementById('power').value = 0;
+  document.getElementById('usePts').checked = true;
+  document.getElementById('showPts').checked = true;
+  rebuildMask(); syncInputs(); recomputeNow();
+});
+
+/* ---------------------------------------------------------------- 导出 */
+function download(name, blob){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+
+document.getElementById('btnPng').addEventListener('click', () => {
+  canvas.toBlob(b => download('wifi-coverage.png', b), 'image/png');
+});
+
+document.getElementById('btnCsv').addEventListener('click', () => {
+  const th = thresholds();
+  let rows = ['x_m,y_m,rssi_dbm,level'];
+  for (let iy=0; iy<N; iy++) for (let ix=0; ix<N; ix++){
+    if (MASK[iy*N+ix] <= 0) continue;
+    const v = state.field[iy*N+ix];
+    rows.push([center(ix).toFixed(2), center(iy).toFixed(2), v.toFixed(2), levelOf(v, th)].join(','));
+  }
+  download('wifi-coverage.csv', new Blob([rows.join('\n')], {type: 'text/csv;charset=utf-8'}));
+});
+
+document.getElementById('btnExpr').addEventListener('click', () => {
+  let rows = ['x_m,y_m,rssi_dbm'];
+  for (const p of state.pts) rows.push([p.x, p.y, p.rssi].join(','));
+  download('measured-points.csv', new Blob([rows.join('\n')], {type: 'text/csv;charset=utf-8'}));
+});
+
+/* ---------------------------------------------------------------- 留一法自检 */
+document.getElementById('btnLoo').addEventListener('click', () => {
+  const out = document.getElementById('looOut');
+  const pts = state.pts.filter(p => !p.test);
+  if (pts.length < 8){ out.textContent = '测点太少，无法做留一法自检。'; return; }
+  out.textContent = '正在计算…';
+  setTimeout(() => {
+    const th = quintiles(pts.map(p => p.rssi));
+    const cal = physField({x: AP_CAL[0], y: AP_CAL[1]}, [], PL0, NEXP);
+    const errs = [], lvHit = [], pm1 = [], bin = [];
+    for (let i=0; i<pts.length; i++){
+      const keep = pts.filter((_, j) => j !== i);
+      const res = residField(keep, cal);
+      const phys = physField(state.ap, state.furn.filter(f => f.db > 0), PL0, NEXP);
+      const v = sampleBilinear(phys, pts[i].x, pts[i].y) + sampleBilinear(res, pts[i].x, pts[i].y) + state.power;
+      const e = v - pts[i].rssi;
+      errs.push(e*e);
+      const lvT = levelOf(pts[i].rssi, th), lvP = levelOf(v, th);
+      lvHit.push(lvT === lvP ? 1 : 0);
+      pm1.push(Math.abs(lvT-lvP) <= 1 ? 1 : 0);
+      bin.push((lvT >= 3) === (lvP >= 3) ? 1 : 0);
+    }
+    const rmse = Math.sqrt(errs.reduce((a,b)=>a+b,0)/errs.length);
+    const pct = a => (a.reduce((x,y)=>x+y,0)/a.length*100).toFixed(0) + '%';
+    out.innerHTML = `留一法（${pts.length} 个测点）：<b>RMSE ${rmse.toFixed(2)} dB</b> ·
+      五级命中 ${pct(lvHit)} · ±1 级 ${pct(pm1)} · 好差二分 ${pct(bin)}`;
+  }, 30);
+});
+
+/* ============================================================================
+ * 8. 启动
+ * ==========================================================================*/
+function init(){
+  loadWeights();
+  document.getElementById('ptHint').textContent =
+    `共 ${D.points.length} 个实测点：29 个蓝色标定点参与插值，12 个红色空心圆是隐藏测试点，只用于评分。`;
+  syncInputs();
+  rebuildMask();
+  recomputeNow();
+  window.addEventListener('resize', () => drawFieldLayer());
+  window.__WIFI = {state, computeField, drawFieldLayer, sampleBilinear, physField, netForward, buildChannels,
+                   levelOf, thresholds, residField, MASK, N, CELL, DOMAIN, WEIGHTS, D};
+}
+init();
+</script>
+</body>
+</html>
