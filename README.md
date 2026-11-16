@@ -113,8 +113,9 @@
   **部署模型 1.888 / 2.146**（五级 33.3%、±1 级 75.0%）。
 - **零观测消融**（只凭户型+AP，RMSE）：纯物理 3.33 / AE 8.57 / U-Net **2.84** / 残差 U-Net 45.60 /
   散落 U-Net 4.24 / PG-MPR 7.77 dB——有观测时部署模型最好，完全无观测时 U-Net 反而最好。
-- **应用** [`wifi-coverage-studio.html`](outputs/rfmap-real41/wifi-coverage-studio.html)：单文件、双击即用，
+- **工作台** [`outputs/rfmap-real41/studio/index.html`](outputs/rfmap-real41/studio/index.html)：单文件、双击即用，
   可拖 AP 与家具、切换模型、五级/连续视图；`build_web` 由 `wifi_rf/web/index.html` 注入数据生成。
+  报告见 [`outputs/rfmap-real41/report.html`](outputs/rfmap-real41/report.html)。
 - **可复查性**：`metrics.json`（逐点预测、零观测、K 折）+ `models/`（5 组权重）+ `data/`（实测点）；
   `verify_js` 校验 Python↔JS 前向差 ≤ 0.0061 dB，并做像素级断言"屏幕颜色 == 该位置场值等级"，0 处不符。
 - **局限**：单房间单次部署；41 点全在 −48~−32 dBm 窄区间，五级阈值跨度仅 5.4 dB，

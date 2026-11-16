@@ -7,8 +7,8 @@
 
 | 文件 | 说明 |
 |---|---|
-| [`wifi-coverage-studio.html`](wifi-coverage-studio.html) | **单文件应用**（778 KB，零依赖、离线可开）。可拖动 AP 与家具，切换五个网络方案 / 物理模型 / 部署模型，五级分区与 dBm 连续两种视图、相对/绝对两套分级 |
-| [`WiFi五方案预测报告.html`](WiFi五方案预测报告.html) | **自包含报告**（1.0 MB，图片内嵌）。数据、五方案对比、部署模型、零观测消融、TSNE/混淆矩阵、融合调参全部在内 |
+| [`studio/index.html`](studio/index.html) | **覆盖预测工作台（单文件应用，778 KB，零依赖、离线可开）**。可拖动 AP 与家具，切换五个网络方案 / 物理模型 / 部署模型，五级分区与 dBm 连续两种视图、相对/绝对两套分级 |
+| [`report.html`](report.html) | **自包含报告**（1.0 MB，图片内嵌）。数据、五方案对比、部署模型、零观测消融、TSNE/混淆矩阵、融合调参全部在内 |
 | [`metrics.json`](metrics.json) | 全部指标（含逐点明细、零观测实验、K 折扫描） |
 | [`fusion.json`](fusion.json) / [`deploy_tune.json`](deploy_tune.json) | 残差融合与部署模型调参记录 |
 | [`figures/`](figures/) | 报告用 9 张图（fig1–fig9） |
