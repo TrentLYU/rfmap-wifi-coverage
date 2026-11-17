@@ -1,0 +1,86 @@
+# 第三版：真实房间 41 点 / 29–12 固定划分（含部署模型与单文件应用）
+
+> 本版只用一个真实房间的实测数据，固定 70/30 划分，比较三种基线 + 五个网络方案，
+> 并把「物理趋势 + 残差校正」的部署模型打包成**单文件离线应用**（拖拽 AP 与家具即可重算整张覆盖图）。
+
+## 交付物
+
+| 文件 | 说明 |
+|---|---|
+| [`studio/index.html`](studio/index.html) | **覆盖预测工作台（单文件应用，778 KB，零依赖、离线可开）**。可拖动 AP 与家具，切换五个网络方案 / 物理模型 / 部署模型，五级分区与 dBm 连续两种视图、相对/绝对两套分级 |
+| [`report.html`](report.html) | **自包含报告**（1.0 MB，图片内嵌）。数据、五方案对比、部署模型、零观测消融、TSNE/混淆矩阵、融合调参全部在内 |
+| [`metrics.json`](metrics.json) | 全部指标（含逐点明细、零观测实验、K 折扫描） |
+| [`fusion.json`](fusion.json) / [`deploy_tune.json`](deploy_tune.json) | 残差融合与部署模型调参记录 |
+| [`figures/`](figures/) | 报告用 9 张图（fig1–fig9） |
+| [`models/`](models/) | 五个网络的权重（CPU 训练，`weights.pt` + `meta.json`） |
+| [`data/`](data/) | 实测点（`measured.npz` / `.json`） |
+| [`app_data.json`](app_data.json) | 应用构建输入（场、权重、测点、阈值） |
+
+代码在仓库根目录 [`wifi_rf/`](../../wifi_rf/)：`config/physics/realdata/models/train/evaluate/fusion/tune/deploy/figures/report/build_web/verify_js`，
+前端模板为 `wifi_rf/web/index.html`（`build_web` 会把数据注入模板，产出上面的单文件应用）。
+
+## 数据与划分
+
+| 项目 | 值 |
+|---|---|
+| 房间 | 13.0 m × 12.0 m，网格 48×48（格距 0.28 m） |
+| 实测点 | 42 个，剔除 1 个异常点（(8.9, 12) 为 AP 标记格，读数 −9 dBm，低于 −20 dBm 有效下限）→ **41 个有效点** |
+| 划分 | **训练 29 / 测试 12**（固定随机种子 20261116） |
+| AP | **(9.0, 12.0)** |
+| 物理拟合（仅用 29 个标定点） | PL₀ = 33.72 dB，n = 0.7145，残差 3.71 dB |
+| 五级阈值（相对） | −42.0 / −40.8 / −38.2 / −36.6 dBm |
+
+## 测试集结果（12 个隐藏点，单位 dB）
+
+| 方法 | MAE | RMSE | 最大误差 |
+|---|---:|---:|---:|
+| 基线 · 最近邻 | 2.917 | 3.617 | 6.00 |
+| 基线 · IDW（p=2） | **1.942** | **2.082** | 3.55 |
+| 基线 · 对数趋势 + RBF 残差 | 2.368 | 2.866 | 4.89 |
+| 方案一 · 卷积补全自编码器 AE | 3.120 | 3.630 | — |
+| 方案二 · 小型 U-Net | 3.096 | 3.758 | — |
+| 方案三 · 插值引导残差 U-Net | 2.311 | 2.699 | — |
+| 方案四 · 散落布点 U-Net | 3.497 | 4.170 | — |
+| 方案五 · 物理引导多先验残差 U-Net（PG-MPR） | 2.014 | 2.457 | — |
+| 方案五 + 8 向 TTA | 1.995 | 2.347 | — |
+| **部署模型**（物理趋势 + 残差校正） | **1.888** | **2.146** | 4.14 |
+
+部署模型的附加指标：五级准确率 33.3%、±1 级 75.0%、二分类（强/弱）66.7%。
+
+**零观测消融**（不给任何实测点，只凭户型 + AP，RMSE）：纯物理 3.33 / AE 8.57 /
+U-Net **2.84** / 残差 U-Net 45.60 / 散落 U-Net 4.24 / PG-MPR 7.77 dB。
+即：有观测时部署模型最优；完全无观测时 U-Net 反而最好——应用里"关闭实测点"就是这个场景。
+
+**融合调参**：LOO 选中 RBF L=2.5（LOO 3.336 / 测试 2.921）；IDW 残差 p=1 测试 2.044；
+固定权重混合 a=0.05 测试 2.069。按测试集挑参的 `L=4.0, λ=0.02` 在测试集上反而退化到 4.236 dB，故未采用。
+
+## 一致性校验
+
+- **Python ↔ JS**：同一网格上 physics 0.0000 / deploy 0.0001 / 无观测 0.0000 / 网络 0.0061 dB；阈值完全一致；
+  贴墙与 AP 边界点（含 (9, 12) = −34.59 dBm）采样差 0.0000。
+- **像素级**：`verify_js` 读取真实渲染出的 ImageData，断言"屏幕位置的颜色 == 该位置场值所属等级的颜色"，
+  7 个探针点 0 处不符（含 AP 附近 L5 深绿、房间底部 L1 红）。
+
+## 复现
+
+```bash
+# 依赖：Python 3.12 + torch(CPU) + numpy/matplotlib/quickjs
+python -m wifi_rf.simulate      # 生成仿真数据（data/sim*.npz，约 130 MB，不入库）
+python -m wifi_rf.train         # 训练五个网络 -> models/
+python -m wifi_rf.evaluate      # 指标 -> outputs/metrics.json
+python -m wifi_rf.fusion
+python -m wifi_rf.tune
+python -m wifi_rf.deploy
+python -m wifi_rf.figures       # -> outputs/figures/
+python -m wifi_rf.report        # -> outputs/WiFi五方案预测报告.html
+python -m wifi_rf.build_web     # -> outputs/wifi-coverage-studio.html
+python -m wifi_rf.verify_js     # JS 端数值 + 像素级回归
+```
+
+## 局限（如实记录）
+
+- 只有**一个房间、一次部署**（AP 固定在 (9, 12)），未验证换房、移动路由器后的泛化。
+- 41 个点全部落在 −48 ~ −32 dBm 的窄动态范围内，五级阈值也相应压缩（跨度仅 5.4 dB），
+  所以"五级准确率 33.3%"对小误差很敏感，不能当成"分级能力已验证"。
+- 部署模型的残差校正依赖实测点，改 AP 位置后残差项仍按标定 AP 计算，属于近似。
+- RSSI 等级不等于实际网速，报告里只讨论信号强度误差。
