@@ -295,8 +295,10 @@ def main():
     else:
         check('Web 应用文件', False, '目录不存在')
 
-    # ---------- 10. 文档 ----------
-    for fp in ('outputs/实测RSSI数据说明.md', 'outputs/RFMap-Studio-使用说明.md'):
+    # ---------- 10. 数据与实验说明 ----------
+    for fp in ('outputs/实测RSSI数据说明.md',
+               'outputs/rfmap-70-30/README.md',
+               'outputs/rfmap-real41/README.md'):
         check(f'文档 {os.path.basename(fp)}', os.path.exists(fp),
               f'{os.path.getsize(fp) // 1024} KB' if os.path.exists(fp) else '缺失')
 

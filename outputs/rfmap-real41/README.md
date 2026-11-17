@@ -61,22 +61,6 @@ U-Net **2.84** / 残差 U-Net 45.60 / 散落 U-Net 4.24 / PG-MPR 7.77 dB。
 - **像素级**：`verify_js` 读取真实渲染出的 ImageData，断言"屏幕位置的颜色 == 该位置场值所属等级的颜色"，
   7 个探针点 0 处不符（含 AP 附近 L5 深绿、房间底部 L1 红）。
 
-## 复现
-
-```bash
-# 依赖：Python 3.12 + torch(CPU) + numpy/matplotlib/quickjs
-python -m wifi_rf.simulate      # 生成仿真数据（data/sim*.npz，约 130 MB，不入库）
-python -m wifi_rf.train         # 训练五个网络 -> models/
-python -m wifi_rf.evaluate      # 指标 -> outputs/metrics.json
-python -m wifi_rf.fusion
-python -m wifi_rf.tune
-python -m wifi_rf.deploy
-python -m wifi_rf.figures       # -> outputs/figures/
-python -m wifi_rf.report        # -> outputs/WiFi五方案预测报告.html
-python -m wifi_rf.build_web     # -> outputs/wifi-coverage-studio.html
-python -m wifi_rf.verify_js     # JS 端数值 + 像素级回归
-```
-
 ## 局限（如实记录）
 
 - 只有**一个房间、一次部署**（AP 固定在 (9, 12)），未验证换房、移动路由器后的泛化。

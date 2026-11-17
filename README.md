@@ -21,6 +21,17 @@
 | **第一版** | 跨户型泛化与五种网络方案比较 | 49 个真实测点；1200 个仿真户型训练，200 个未见户型测试 | PG-MPR-UNet、跨户型评估、首版报告与离线网站 |
 | **巡测小车** | 网格路线移动、定点停留与采集端扩展 | 规划 12 列 × 12 点，共 144 个测点 | miniAuto / Arduino Uno 工程、完整路线程序与路线图 |
 
+## 实验数据与结果索引
+
+| 内容 | 数据与结果文件 |
+|---|---|
+| 实测数据 | [49 点原始表](data.xlsx) · [家具 140 点原始表](放家具数据.xlsx) · [49 点规范化 CSV](data/rfmap/measured.csv) · [第三版原始 42 条 / 有效 41 点 CSV](outputs/rfmap-real41/measured.csv) |
+| 数据说明 | [实测 RSSI 数据来源、坐标与质量检查](outputs/实测RSSI数据说明.md) |
+| 第一版结果 | [跨户型仿真指标](outputs/rfmap-results/metrics_sim.json) · [真实房间指标](outputs/rfmap-results/metrics_real.json) · [分层指标](outputs/rfmap-results/metrics_stratified.json) |
+| 第二版结果 | [全部 189 点](outputs/rfmap-70-30/all_points.csv) · [训练/测试划分](outputs/rfmap-70-30/split.json) · [汇总指标](outputs/rfmap-70-30/metrics.json) · [隐藏点预测](outputs/rfmap-70-30/predictions.csv) |
+| 第三版结果 | [42 条原始记录（41 点有效）](outputs/rfmap-real41/measured.csv) · [汇总指标](outputs/rfmap-real41/metrics.json) · [残差融合记录](outputs/rfmap-real41/fusion.json) |
+| 独立基线结果 | [49 点交叉验证](outputs/member-progress/cby47/metrics-49.csv) · [140 点交叉验证](outputs/member-progress/cby47/metrics-140.csv) |
+
 ---
 
 ## 第三版：真实房间 41 点建模与单文件部署
@@ -160,14 +171,14 @@ PG-MPR-UNet 在两种基础模型测试中均表现最好，并优于最强插�
 
 前进、后退和左平移已分别进行实车调试，并形成完整顺序巡测程序。**144 点整图覆盖、累计位置误差以及 ESP32 采集记录与点号对齐仍待联调验证**，因此当前不能将其表述为已经完成的端到端自动采集系统。
 
-[查看小车使用说明](hardware/grid_car/README.md) · [查看完整巡测工程](hardware/grid_car/10_全图检测_顺序积木/) · [查看网格路线图](docs/assets/grid-car-route.svg)
+[查看完整巡测工程](hardware/grid_car/10_全图检测_顺序积木/) · [查看网格路线图](docs/assets/grid-car-route.svg)
 
 ---
 
 ## 仓库主要目录
 
 ```text
-├── wifi_rf/                    # 第三版：真实数据、网络训练、融合、部署与网页构建
+├── wifi_rf/                    # 第三版：网络训练、融合、部署与网页构建代码
 ├── rfmap/                      # 第一、二版：仿真、网络、实验、评估与离线推理
 ├── hardware/grid_car/          # 巡测小车 Mixly / Arduino Uno 工程
 ├── lab-tools/                  # ESP32-C6 / ESPectre 采集与设备自检工具
@@ -187,4 +198,5 @@ PG-MPR-UNet 在两种基础模型测试中均表现最好，并优于最强插�
 1. [第三版单文件离线工作台](outputs/rfmap-real41/studio/index.html)
 2. [第二版离线户型预测编辑器](outputs/rfmap-70-30/studio/index.html)
 3. [第一版实验报告](outputs/RF覆盖预测实验报告.html)
-4. [小车网格巡测说明](hardware/grid_car/README.md)
+4. [实测数据与质量检查](outputs/实测RSSI数据说明.md)
+5. [小车完整巡测工程](hardware/grid_car/10_全图检测_顺序积木/)

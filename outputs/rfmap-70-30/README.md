@@ -2,15 +2,6 @@
 
 本次训练、验证、图表与离线编辑器全部保存在本目录。双击 `studio/index.html` 即可运行；完整结果看 `report.html`。无需联网或安装浏览器扩展。
 
-## 使用预测器
-
-1. 打开“户型信号预测”。导入已经裁切到户型外框的图片，填写实际宽深，或用两点实长标定比例。
-2. 用“拖画墙体”描出墙、柱等固定结构，门洞留空。图片是参考底图，不自动识别墙体。
-3. 输入路由器 x/y 或在画布上放置 AP。坐标原点为左下（西南）；单位米。
-4. 从柜子、床、沙发、椅子、马桶、桌子、衣柜、书架、冰箱、洗衣机、浴缸、电视柜中选择并添加家具。拖动或修改坐标、宽深，可旋转或删除。
-5. 点“生成整屋预测”，切换五档或连续 RSSI。可导出预测 PNG、网格 CSV 和工程 JSON。
-6. “70/30 实测验证”页可切换两版数据、两种任务与五种方法，查看训练/测试点、误差、分类支持数与混淆矩阵，并导出点位和指标。
-
 ## 此次准确性
 
 空房 49 点分为 34 训练、15 测试；有家具 140 点分为 98 训练、42 测试。总计 132/189=69.84% 训练、57/189=30.16% 测试，整数比例近似 70/30。两个版本的相同 0.2 m 数值坐标组不跨集合。
@@ -45,22 +36,4 @@
 
 浏览器与 Python 四个几何场景的输入一致，前向最大绝对差 **0.00001526 dB**。本机浏览器实测添加马桶后成功生成 1020 个有效格点，页面报告约 32 ms；该单次时间不是性能保证。
 
-## 复现
-
-在项目根目录使用已有环境：
-
-```bash
-.venv/bin/python -m rfmap.holdout_experiment --epochs 180
-.venv/bin/python -m rfmap.holdout_report
-.venv/bin/python -m rfmap.holdout_selfcheck
-```
-
-纯户型离线推理（不读实测答案）：
-
-```bash
-.venv/bin/python -m rfmap.holdout_infer \
-  --project outputs/rfmap-70-30/studio/sample_room.json \
-  --out outputs/rfmap-70-30/inference-sample
-```
-
-源实现位于 `rfmap/holdout_experiment.py`、`rfmap/holdout_infer.py`、`rfmap/holdout_report.py`、`rfmap/holdout_selfcheck.py`。运行训练会覆盖本次结果目录；若要新实验保留旧结果，使用 `--out` 指定新目录。原来的 `outputs/rfmap-studio/` 和历史实验结果未改写。
+源实现位于 `rfmap/holdout_experiment.py`、`rfmap/holdout_infer.py`、`rfmap/holdout_report.py`、`rfmap/holdout_selfcheck.py`。原来的 `outputs/rfmap-studio/` 和历史实验结果未改写。
